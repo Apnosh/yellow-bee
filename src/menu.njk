@@ -75,39 +75,43 @@ tickerItems:
       <p class="menu-section-meta">{{ menu.banhmi.meta }}</p>
     </header>
 
-    {# Text-only treatment for the full Banh Mi list. Keeps descriptions
-       and prices but drops photos -- cleaner showcase since stock photos
-       can mislead and real photos aren't always available. #}
+    {# Banh Mi list. Prefer Apnosh portal data ONLY when the portal has
+       at least as many items as the local fallback — otherwise use
+       local. Prevents a partial/broken portal state from silently
+       hiding most of the menu (we hit this when the portal had only
+       "Spicy Tuna Banh Mi" and dropped the other 6). #}
+    {%- set banhMiItems = menu.banhmi.items -%}
+    {%- set banhMiFromPortal = false -%}
+    {%- if apnosh.menu and apnosh.menu['Banh Mi'] and apnosh.menu['Banh Mi'].items.length >= menu.banhmi.items.length -%}
+      {%- set banhMiItems = apnosh.menu['Banh Mi'].items -%}
+      {%- set banhMiFromPortal = true -%}
+    {%- endif -%}
+
     <div class="menu-grid menu-grid--text">
-      {% if apnosh.menu and apnosh.menu['Banh Mi'] %}
-        {% for item in apnosh.menu['Banh Mi'].items %}
+      {% for item in banhMiItems %}
+        {%- if banhMiFromPortal -%}
           {%- set legacy = (menu.banhmi.items | selectattr('name', 'equalto', item.name) | first)
               or (menu.banhmi.items | selectattr('name', 'equalto', item.name | replace('The ', '')) | first) -%}
-          <article class="menu-card menu-card--text reveal d{{ loop.index }}" data-num="№ 0{{ loop.index }}">
-            <div class="menu-card-body">
-              <div class="menu-card-head">
-                <h3 class="menu-card-name">{{ item.name }}</h3>
-                <span class="menu-card-price">{{ item.price }}</span>
-              </div>
-              {% if item.description or (legacy and legacy.desc) %}
-              <p class="menu-card-desc">{{ item.description or legacy.desc }}</p>
-              {% endif %}
-            </div>
-          </article>
-        {% endfor %}
-      {% else %}
-        {% for item in menu.banhmi.items %}
+          {%- set itemName = item.name -%}
+          {%- set itemPrice = item.price -%}
+          {%- set itemDesc = item.description or (legacy and legacy.desc) -%}
+        {%- else -%}
+          {%- set itemName = item.name -%}
+          {%- set itemPrice = item.price -%}
+          {%- set itemDesc = item.desc -%}
+        {%- endif -%}
         <article class="menu-card menu-card--text reveal d{{ loop.index }}" data-num="№ 0{{ loop.index }}">
           <div class="menu-card-body">
             <div class="menu-card-head">
-              <h3 class="menu-card-name">{{ item.name }}</h3>
-              <span class="menu-card-price">{{ item.price }}</span>
+              <h3 class="menu-card-name">{{ itemName }}</h3>
+              <span class="menu-card-price">{{ itemPrice }}</span>
             </div>
-            <p class="menu-card-desc">{{ item.desc }}</p>
+            {% if itemDesc %}
+            <p class="menu-card-desc">{{ itemDesc }}</p>
+            {% endif %}
           </div>
         </article>
-        {% endfor %}
-      {% endif %}
+      {% endfor %}
     </div>
 
     {# SAUCES -- modifiers under Banh Mi, rendered inline so it visually
