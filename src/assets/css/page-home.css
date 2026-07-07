@@ -360,6 +360,7 @@
 }
 /* Per-card override: shrink Grocery Boba Bonus photo so the milk tea
    doesn't fill the whole frame like the other (food) photos do. */
+.special-card[data-slug="grocery-boba"] .special-img { background: var(--white); }
 .special-card[data-slug="grocery-boba"] .special-img img {
   object-fit: contain;
   padding: 2rem;
