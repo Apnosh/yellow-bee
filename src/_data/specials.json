@@ -15,8 +15,8 @@
         "Sauce of your choice",
         "Vietnamese White Drip Coffee (hot or iced)"
       ],
-      "image": "photos/placeholders/special-placeholder.svg",
-      "alt": "Break Your Fast Combo — photo coming soon"
+      "image": "photos/specials/break-your-fast.webp",
+      "alt": "Break Your Fast Combo — banh mi with Vietnamese drip coffee"
     },
     {
       "slug": "happy-hour",
@@ -60,7 +60,7 @@
         "$30+ grocery purchase",
         "One per transaction"
       ],
-      "image": "photos/drinks/classic-milk-tea.jpg",
+      "image": "photos/drinks/classic-milk-tea.webp",
       "alt": "Grocery Boba Bonus — Classic Milk Tea"
     }
   ]

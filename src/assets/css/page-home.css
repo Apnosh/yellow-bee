@@ -699,7 +699,7 @@
 .drink-card > * { position: relative; z-index: 1; }
 .drink-card-img { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; margin-bottom: 1.1rem; }
 .drink-card-img img {
-  max-height: 280px; width: auto; object-fit: contain;
+  width: 100%; height: 100%; object-fit: contain;
   filter: drop-shadow(0 14px 28px rgba(0,0,0,0.18));
   transition: transform 0.5s var(--ease-out);
 }
