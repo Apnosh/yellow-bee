@@ -114,16 +114,23 @@ tickerItems:
       {% endfor %}
     </div>
 
-    {# SAUCES -- modifiers under Banh Mi, rendered inline so it visually
-       belongs to this section (mirrors the Toppings treatment under Boba). #}
-    {% if apnosh.menu and apnosh.menu['Sauces'] and apnosh.menu['Sauces'].modifiers.length > 0 %}
+    {# SAUCES — inline under Banh Mi. Prefer portal when it has as many
+       or more; otherwise use local menu.banhmi.sauces list. #}
+    {%- set sauceList = menu.banhmi.sauces.list -%}
+    {%- if apnosh.menu and apnosh.menu['Sauces'] and apnosh.menu['Sauces'].modifiers.length >= menu.banhmi.sauces.list.length -%}
+      {%- set sauceList = [] -%}
+      {%- for s in apnosh.menu['Sauces'].modifiers -%}
+        {%- set sauceList = sauceList.concat([s]) -%}
+      {%- endfor -%}
+    {%- endif -%}
+    {% if sauceList.length > 0 %}
     <div class="menu-toppings menu-toppings--light reveal" style="margin-top:1.5rem;" id="sauces">
       <div class="menu-toppings-head">
-        <div class="menu-toppings-label">Sauce options</div>
+        <div class="menu-toppings-label">{{ menu.banhmi.sauces.label }}</div>
         <div class="menu-toppings-price">House made</div>
       </div>
       <div class="menu-toppings-list">
-        {% for s in apnosh.menu['Sauces'].modifiers %}
+        {% for s in sauceList %}
         <span class="menu-topping-tag">
           {{ s.name }}{% if s.price %} <em style="opacity:.7">({{ s.price }})</em>{% endif %}
         </span>
@@ -185,81 +192,77 @@ tickerItems:
       <p class="menu-section-meta">Handcrafted milk teas, fruit teas, and smoothies.</p>
     </header>
 
-    {% if apnosh.menu and apnosh.menu['Boba'] %}
-      {# Featured card grid for the few drinks with portal photos; rest split
-         into Teas vs Smoothies columns. Items with "Smoothie" in the name
-         go to the smoothies column; everything else is a tea. #}
-      {%- set bobaWithPhotos = [] -%}
-      {%- set bobaTeas = [] -%}
-      {%- set bobaSmoothies = [] -%}
-      {%- for item in apnosh.menu['Boba'].items -%}
-        {%- if item.photoUrl -%}
-          {%- set bobaWithPhotos = bobaWithPhotos.concat([item]) -%}
-        {%- elif 'Smoothie' in item.name -%}
-          {%- set bobaSmoothies = bobaSmoothies.concat([item]) -%}
-        {%- else -%}
-          {%- set bobaTeas = bobaTeas.concat([item]) -%}
-        {%- endif -%}
-      {%- endfor -%}
+    {# Choose Boba source: prefer portal when it has at least as many items
+       as the local list; otherwise use local (protects against portal
+       being partial/misconfigured and hiding most of the menu). #}
+    {%- set bobaSource = drinks.items -%}
+    {%- set bobaFromPortal = false -%}
+    {%- if apnosh.menu and apnosh.menu['Boba'] and apnosh.menu['Boba'].items.length >= drinks.items.length -%}
+      {%- set bobaSource = apnosh.menu['Boba'].items -%}
+      {%- set bobaFromPortal = true -%}
+    {%- endif -%}
 
-      {% if bobaWithPhotos.length > 0 %}
-      <div class="menu-drinks-grid menu-drinks-grid--featured">
-        {% for item in bobaWithPhotos %}
-        <article class="drink-menu-card reveal d{{ loop.index }}">
-          <div class="drink-menu-card-img">
-            <img src="{{ item.photoUrl }}" alt="{{ item.name }}" loading="lazy" decoding="async">
-          </div>
-          <div class="drink-menu-card-name">{{ item.name }}</div>
-          <div class="drink-menu-card-price">{{ item.price }}</div>
-        </article>
-        {% endfor %}
+    {# Split into featured (with photos) / teas / smoothies. #}
+    {%- set bobaWithPhotos = [] -%}
+    {%- set bobaTeas = [] -%}
+    {%- set bobaSmoothies = [] -%}
+    {%- for item in bobaSource -%}
+      {%- set hasPhoto = item.photoUrl or item.image -%}
+      {%- if hasPhoto -%}
+        {%- set bobaWithPhotos = bobaWithPhotos.concat([item]) -%}
+      {%- elif 'Smoothie' in item.name -%}
+        {%- set bobaSmoothies = bobaSmoothies.concat([item]) -%}
+      {%- else -%}
+        {%- set bobaTeas = bobaTeas.concat([item]) -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {% if bobaWithPhotos.length > 0 %}
+    <div class="menu-drinks-grid menu-drinks-grid--featured">
+      {% for item in bobaWithPhotos %}
+        {%- set imgSrc = item.photoUrl or ('/' + item.image) -%}
+      <article class="drink-menu-card reveal d{{ loop.index }}">
+        <div class="drink-menu-card-img">
+          <img src="{{ imgSrc }}" alt="{{ item.name }}" loading="lazy" decoding="async">
+        </div>
+        <div class="drink-menu-card-name">{{ item.name }}</div>
+        <div class="drink-menu-card-price">{{ item.price }}</div>
+      </article>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if bobaTeas.length > 0 or bobaSmoothies.length > 0 %}
+    <div class="boba-list-cols reveal" style="margin-top:{% if bobaWithPhotos.length > 0 %}2.5rem{% else %}0{% endif %};">
+      {% if bobaTeas.length > 0 %}
+      <div class="boba-list-col">
+        <h3 class="boba-list-heading">Teas</h3>
+        <ul class="menu-list menu-list--dark">
+          {% for item in bobaTeas %}
+          <li class="menu-list-item">
+            <span class="menu-list-name">{{ item.name }}</span>
+            <span class="menu-list-dots" aria-hidden="true"></span>
+            <span class="menu-list-price">{{ item.price }}</span>
+          </li>
+          {% endfor %}
+        </ul>
       </div>
       {% endif %}
-
-      {% if bobaTeas.length > 0 or bobaSmoothies.length > 0 %}
-      <div class="boba-list-cols reveal" style="margin-top:{% if bobaWithPhotos.length > 0 %}2.5rem{% else %}0{% endif %};">
-        {% if bobaTeas.length > 0 %}
-        <div class="boba-list-col">
-          <h3 class="boba-list-heading">Teas</h3>
-          <ul class="menu-list menu-list--dark">
-            {% for item in bobaTeas %}
-            <li class="menu-list-item">
-              <span class="menu-list-name">{{ item.name }}</span>
-              <span class="menu-list-dots" aria-hidden="true"></span>
-              <span class="menu-list-price">{{ item.price }}</span>
-            </li>
-            {% endfor %}
-          </ul>
-        </div>
-        {% endif %}
-        {% if bobaSmoothies.length > 0 %}
-        <div class="boba-list-col">
-          <h3 class="boba-list-heading">Smoothies</h3>
-          <ul class="menu-list menu-list--dark">
-            {% for item in bobaSmoothies %}
-            <li class="menu-list-item">
-              <span class="menu-list-name">{{ item.name }}</span>
-              <span class="menu-list-dots" aria-hidden="true"></span>
-              <span class="menu-list-price">{{ item.price }}</span>
-            </li>
-            {% endfor %}
-          </ul>
-        </div>
-        {% endif %}
+      {% if bobaSmoothies.length > 0 %}
+      <div class="boba-list-col">
+        <h3 class="boba-list-heading">Smoothies</h3>
+        <ul class="menu-list menu-list--dark">
+          {% for item in bobaSmoothies %}
+          <li class="menu-list-item">
+            <span class="menu-list-name">{{ item.name }}</span>
+            <span class="menu-list-dots" aria-hidden="true"></span>
+            <span class="menu-list-price">{{ item.price }}</span>
+          </li>
+          {% endfor %}
+        </ul>
       </div>
       {% endif %}
-    {% else %}
-      <div class="menu-drinks-grid">
-        {% for drink in drinks.items %}
-        <article class="drink-menu-card reveal d{{ loop.index }}">
-          <div class="drink-menu-card-img">
-            <img src="/{{ drink.image }}" alt="{{ drink.alt }}" loading="lazy" decoding="async">
-          </div>
-          <div class="drink-menu-card-name">{{ drink.name }}</div>
-          <div class="drink-menu-card-price">{{ drink.price }}</div>
-        </article>
-        {% endfor %}
-      </div>
+    </div>
     {% endif %}
 
     {% if apnosh.menu and apnosh.menu['Toppings'] and apnosh.menu['Toppings'].modifiers.length > 0 %}
@@ -296,38 +299,69 @@ tickerItems:
   Delight) get a highlight treatment. Milk options from
   apnosh.menu['Milk options'].modifiers.
 -->
-{% if apnosh.menu and apnosh.menu['Espresso'] and apnosh.menu['Espresso'].items.length > 0 %}
+{# Espresso — always render, using portal when it has at least as many
+   items as local, otherwise local fallback. Local data lives in
+   menu.espresso (menu.json). #}
+{%- set espressoSource = menu.espresso.items -%}
+{%- set espressoFromPortal = false -%}
+{%- if apnosh.menu and apnosh.menu['Espresso'] and apnosh.menu['Espresso'].items.length >= menu.espresso.items.length -%}
+  {%- set espressoSource = apnosh.menu['Espresso'].items -%}
+  {%- set espressoFromPortal = true -%}
+{%- endif -%}
+
+{%- if espressoFromPortal -%}
+  {%- set featuredEspresso = espressoSource | selectattr('isFeatured') | first -%}
+  {%- set featuredName = featuredEspresso.name -%}
+  {%- set featuredDesc = featuredEspresso.description -%}
+  {%- set featuredPrice = featuredEspresso.price -%}
+  {%- set featuredPhoto = featuredEspresso.photoUrl -%}
+{%- else -%}
+  {%- set featuredEspresso = menu.espresso.featured -%}
+  {%- set featuredName = menu.espresso.featured.name -%}
+  {%- set featuredDesc = menu.espresso.featured.desc -%}
+  {%- set featuredPrice = menu.espresso.featured.price -%}
+  {%- set featuredPhoto = false -%}
+{%- endif -%}
+
 <section class="menu-section menu-section--paper" id="espresso">
   <div class="menu-section-mega menu-section-mega--dark" aria-hidden="true">Espresso</div>
   <div class="sec-container">
     <header class="menu-section-head reveal">
-      <div class="sec-mark sec-mark--dark">Chapter 05 / The Roast</div>
-      <h2>Coffee &amp; Espresso.</h2>
-      <p class="menu-section-meta menu-section-meta--dark">All available in hot, iced, or blended.</p>
+      <div class="sec-mark sec-mark--dark">Chapter 05 / {{ menu.espresso.label }}</div>
+      <h2>{{ menu.espresso.headline }}</h2>
+      <p class="menu-section-meta menu-section-meta--dark">{{ menu.espresso.meta }}</p>
     </header>
 
-    {% set featuredEspresso = apnosh.menu['Espresso'].items | selectattr('isFeatured') | first %}
     <div class="espresso-layout reveal">
       {% if featuredEspresso %}
       <article class="menu-feature menu-feature--vertical">
-        {% if featuredEspresso.photoUrl %}
+        {% if featuredPhoto %}
         <figure class="menu-feature-img">
           <span class="menu-feature-tag">Featured</span>
-          <img src="{{ featuredEspresso.photoUrl }}" alt="{{ featuredEspresso.name }}" loading="lazy" decoding="async">
+          <img src="{{ featuredPhoto }}" alt="{{ featuredName }}" loading="lazy" decoding="async">
         </figure>
-        {% endif %}
+        {% else %}
         <div class="menu-feature-body">
-          {% if not featuredEspresso.photoUrl %}<div class="menu-feature-eyebrow">Featured</div>{% endif %}
-          <h3 class="menu-feature-name">{{ featuredEspresso.name }}</h3>
-          <p class="menu-feature-tagline">{{ featuredEspresso.description or "Our signature drink." }}</p>
-          <div class="menu-feature-price">{{ featuredEspresso.price }}</div>
+          <div class="menu-feature-eyebrow">Featured</div>
+          <h3 class="menu-feature-name">{{ featuredName }}</h3>
+          <p class="menu-feature-tagline">{{ featuredDesc or "Our signature drink." }}</p>
+          <div class="menu-feature-price">{{ featuredPrice }}</div>
         </div>
+        {% endif %}
+        {% if featuredPhoto %}
+        <div class="menu-feature-body">
+          <h3 class="menu-feature-name">{{ featuredName }}</h3>
+          <p class="menu-feature-tagline">{{ featuredDesc or "Our signature drink." }}</p>
+          <div class="menu-feature-price">{{ featuredPrice }}</div>
+        </div>
+        {% endif %}
       </article>
       {% endif %}
 
       <ul class="menu-list">
-        {% for item in apnosh.menu['Espresso'].items %}
-          {% if not item.isFeatured %}
+        {% for item in espressoSource %}
+          {%- set isFeatured = espressoFromPortal and item.isFeatured -%}
+          {% if not isFeatured %}
           <li class="menu-list-item">
             <span class="menu-list-name">{{ item.name }}</span>
             <span class="menu-list-dots" aria-hidden="true"></span>
@@ -338,22 +372,29 @@ tickerItems:
       </ul>
     </div>
 
-    {% if apnosh.menu['Milk options'] and apnosh.menu['Milk options'].modifiers.length > 0 %}
+    {# Milk options — prefer portal modifiers, fall back to local list. #}
+    {%- set milkOptions = menu.espresso.milkOptions.list -%}
+    {%- if apnosh.menu and apnosh.menu['Milk options'] and apnosh.menu['Milk options'].modifiers.length >= menu.espresso.milkOptions.list.length -%}
+      {%- set milkOptions = [] -%}
+      {%- for m in apnosh.menu['Milk options'].modifiers -%}
+        {%- set milkOptions = milkOptions.concat([m.name]) -%}
+      {%- endfor -%}
+    {%- endif -%}
+    {% if milkOptions.length > 0 %}
     <div class="menu-toppings menu-toppings--light reveal" style="margin-top:2rem;">
       <div class="menu-toppings-head">
-        <div class="menu-toppings-label">Milk options</div>
+        <div class="menu-toppings-label">{{ menu.espresso.milkOptions.label }}</div>
         <div class="menu-toppings-price">No surcharge</div>
       </div>
       <div class="menu-toppings-list">
-        {% for m in apnosh.menu['Milk options'].modifiers %}
-        <span class="menu-topping-tag">{{ m.name }}</span>
+        {% for m in milkOptions %}
+        <span class="menu-topping-tag">{{ m }}</span>
         {% endfor %}
       </div>
     </div>
     {% endif %}
   </div>
 </section>
-{% endif %}
 
 <!-- PASTRIES -->
 <section class="menu-section menu-section--paper" id="pastries">

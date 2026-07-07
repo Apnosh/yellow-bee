@@ -5,65 +5,92 @@
   "banhmi": {
     "label": "The Deli",
     "headline": "Banh Mi.",
-    "meta": "Served on a toasted baguette. Swap for a bagel — Everything, Jalapeno Cheddar, Cheddar, or Plain.",
+    "meta": "Served on a toasted baguette. Swap for a bagel — Plain, Everything, Cheddar, or Jalapeño Cheddar.",
     "items": [
       {
-        "name": "Traditional",
-        "desc": "Jambon, white ham, pâté, pickled daikon & radish, cilantro, jalapeño, cucumber, egg cream mayo.",
+        "name": "The Traditional",
+        "desc": "White ham, jambon, pickled carrot & daikon, cilantro, cucumber, jalapeño, egg cream, and pâté.",
         "image": "photos/banh mi/sandwich-with-ham-fresh-vegetables 3.webp",
         "alt": "Traditional Banh Mi",
-        "price": "$10"
-      },
-      {
-        "name": "Grilled Chicken",
-        "desc": "Grilled chicken thigh, pickled daikon & radish, cilantro, jalapeño, cucumber, egg cream mayo.",
-        "image": "photos/banh mi/front-view-arrangement-delicious-sandwiches-with-copy-space 2.webp",
-        "alt": "Grilled Chicken Banh Mi",
-        "price": "$10"
-      },
-      {
-        "name": "Grilled Pork",
-        "desc": "Chargrilled lemongrass pork, pickled daikon & carrot, fresh cilantro, jalapeño, cucumber.",
-        "image": "photos/banh mi/side-view-burger-with-onion-ring-top 2.webp",
-        "alt": "Grilled Pork Banh Mi",
-        "price": "$10"
-      },
-      {
-        "name": "Pork Meatball",
-        "desc": "House-made pork meatballs, pickled daikon & radish, cilantro, jalapeño, cucumber, egg cream mayo.",
-        "image": "photos/banh mi/tasty-burger-tomatoes 1.webp",
-        "alt": "Pork Meatball Banh Mi",
-        "price": "$10"
-      },
-      {
-        "name": "Fried Tofu",
-        "desc": "Crispy fried tofu, pickled daikon & radish, cilantro, jalapeño, cucumber, hoisin sauce. Vegetarian.",
-        "image": "photos/banh mi/panini-sandwich-with-ham-cheese-tomato-arugula-isolated-white-background 2.webp",
-        "alt": "Fried Tofu Banh Mi",
-        "price": "$10"
-      },
-      {
-        "name": "Spring Mix & Avocado",
-        "desc": "Spring mix, avocado, pickled daikon, cucumber, jalapeño, cilantro, egg cream mayo. Vegetarian.",
-        "image": "photos/banh mi/side-view-club-sandwich-with-salted-cucumbers-lemon-olives-round-white-plate 1.webp",
-        "alt": "Spring Mix Avocado Banh Mi",
         "price": "$12"
       },
       {
+        "name": "Grilled Chicken",
+        "desc": "Grilled chicken, pickled carrot & daikon, cilantro, cucumber, jalapeño, and egg cream.",
+        "image": "photos/banh mi/front-view-arrangement-delicious-sandwiches-with-copy-space 2.webp",
+        "alt": "Grilled Chicken Banh Mi",
+        "price": "$13",
+        "popular": true
+      },
+      {
+        "name": "Grilled Pork",
+        "desc": "Grilled pork, pickled carrot & daikon, cilantro, cucumber, jalapeño, and egg cream.",
+        "image": "photos/banh mi/side-view-burger-with-onion-ring-top 2.webp",
+        "alt": "Grilled Pork Banh Mi",
+        "price": "$13"
+      },
+      {
+        "name": "Pork Meatball",
+        "desc": "Pork meatball, pickled carrot & daikon, cilantro, cucumber, jalapeño, and egg cream.",
+        "image": "photos/banh mi/tasty-burger-tomatoes 1.webp",
+        "alt": "Pork Meatball Banh Mi",
+        "price": "$13"
+      },
+      {
+        "name": "Beef Brisket",
+        "desc": "Beef brisket, pickled carrot & daikon, cilantro, cucumber, jalapeño, egg cream, and smoked house special BBQ sauce.",
+        "image": "photos/banh mi/bread-with-seeds-vegetables-sandwich 1.webp",
+        "alt": "Beef Brisket Banh Mi",
+        "price": "$15",
+        "popular": true
+      },
+      {
         "name": "Beef Short Rib",
-        "desc": "Slow-braised short rib, pickled daikon & radish, cilantro, jalapeño, cucumber, egg cream mayo.",
+        "desc": "Beef short rib, pickled carrot & daikon, cilantro, cucumber, jalapeño, and egg cream.",
         "image": "photos/banh mi/bread-with-seeds-vegetables-sandwich 1.webp",
         "alt": "Beef Short Rib Banh Mi",
-        "price": "$16"
+        "price": "$17",
+        "popular": true
+      },
+      {
+        "name": "Fried Tofu",
+        "desc": "Fried tofu, pickled carrot & daikon, cilantro, cucumber, jalapeño, egg cream, and soy sauce.",
+        "image": "photos/banh mi/panini-sandwich-with-ham-cheese-tomato-arugula-isolated-white-background 2.webp",
+        "alt": "Fried Tofu Banh Mi",
+        "price": "$15"
+      },
+      {
+        "name": "Vietnamese Vegetarian Ham",
+        "desc": "Vegetarian Vietnamese ham, pickled carrot & daikon, cilantro, cucumber, jalapeño, and egg cream.",
+        "image": "photos/banh mi/panini-sandwich-with-ham-cheese-tomato-arugula-isolated-white-background 2.webp",
+        "alt": "Vietnamese Vegetarian Ham Banh Mi",
+        "price": "$15"
+      },
+      {
+        "name": "Spring Mix & Avocado",
+        "desc": "Avocado, spring mix, pickled carrot & daikon, cilantro, cucumber, jalapeño, and balsamic vinaigrette.",
+        "image": "photos/banh mi/side-view-club-sandwich-with-salted-cucumbers-lemon-olives-round-white-plate 1.webp",
+        "alt": "Spring Mix Avocado Banh Mi",
+        "price": "$15"
       }
-    ]
+    ],
+    "sauces": {
+      "label": "Sauce Options",
+      "list": [
+        { "name": "House Special" },
+        { "name": "Hot Lemon" },
+        { "name": "Truffle Oil", "price": "+$2" },
+        { "name": "Smoked BBQ" },
+        { "name": "Soy Sauce" },
+        { "name": "Balsamic Vinaigrette" }
+      ]
+    }
   },
 
   "bagels": {
     "label": "Bakery",
     "headline": "Bagels.",
-    "meta": "Baked fresh in-house every morning. $2.75 each.",
-    "price": "$2.75",
+    "meta": "Baked fresh in-house every morning. Same price as banh mi.",
     "items": [
       {
         "slug": "plain",
@@ -80,11 +107,11 @@
         "alt": "Everything bagel"
       },
       {
-        "slug": "asiago",
-        "name": "Asiago",
-        "desc": "Baked with aged asiago on top. Sharp and savory.",
+        "slug": "cheddar",
+        "name": "Cheddar",
+        "desc": "Baked with sharp cheddar on top. Melty and savory.",
         "image": "photos/bagels/asiago.jpg",
-        "alt": "Asiago bagel"
+        "alt": "Cheddar bagel"
       },
       {
         "slug": "jalapeno-cheddar",
@@ -94,6 +121,32 @@
         "alt": "Jalapeño Cheddar bagel"
       }
     ]
+  },
+
+  "espresso": {
+    "label": "The Roast",
+    "headline": "Coffee & Espresso.",
+    "meta": "All available in hot, iced, or blended.",
+    "featured": {
+      "name": "Pandan Matcha Delight",
+      "desc": "Ceremonial matcha latte topped with salted pandan cold foam.",
+      "price": "$8",
+      "tag": "Special"
+    },
+    "items": [
+      { "name": "Vietnamese White Drip", "desc": "Slow-brewed Vietnamese drip coffee layered with condensed milk for a bold yet silky finish.", "price": "$6", "popular": true },
+      { "name": "Vietnamese Black Drip", "desc": "Slow-brewed Vietnamese drip coffee.", "price": "$6" },
+      { "name": "Latte", "desc": "Classic espresso blended with steamed or fresh milk. Available in caramel or vanilla.", "price": "$6" },
+      { "name": "Mocha", "desc": "Espresso, chocolate, and milk combined into a smooth mocha. Classic or white chocolate available.", "price": "$6" },
+      { "name": "Matcha Latte", "desc": "Premium matcha blended with steamed milk for a smooth, lightly sweet latte.", "price": "$6" },
+      { "name": "Chai Tea Latte", "desc": "Chai tea and milk, lightly spiced and smooth.", "price": "$6" },
+      { "name": "Americano", "desc": "Rich espresso and water.", "price": "$5" },
+      { "name": "Teas", "desc": "Mint tea, black tea, or green tea.", "price": "$5" }
+    ],
+    "milkOptions": {
+      "label": "Milk Options",
+      "list": ["2% Milk", "Almond", "Oat", "Soy", "Breve"]
+    }
   },
 
   "pastries": {

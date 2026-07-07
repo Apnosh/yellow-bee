@@ -1,66 +1,52 @@
 {
   "chapter": "Daily Specials",
   "headline": "Daily Specials.",
-  "meta": "Every day, all day — four ways to save.",
+  "meta": "Combos & discounts — every day.",
   "items": [
     {
-      "slug": "saigon-morning",
-      "name": "Saigon Morning Combo",
-      "time": "9AM – 11AM Daily",
+      "slug": "break-your-fast",
+      "name": "Break Your Fast Combo",
+      "time": "Opening – 11 AM",
       "price": "$14.99",
-      "save": "Save ~$4",
-      "tagline": "Our best-seller banh mi meets our signature coffee. A proper Saigon wake-up.",
+      "save": "$20.99 value",
+      "tagline": "Grilled chicken banh mi meets our signature Vietnamese drip coffee.",
       "includes": [
         "Grilled Chicken Banh Mi",
-        "Vietnamese White Drip Coffee",
-        "House Signature Sauce"
+        "Sauce of your choice",
+        "Vietnamese White Drip Coffee (hot or iced)"
       ],
       "image": "photos/placeholders/special-placeholder.svg",
-      "alt": "Saigon Morning Combo — photo coming soon"
+      "alt": "Break Your Fast Combo — photo coming soon"
     },
     {
       "slug": "happy-hour",
       "name": "Happy Hour Special",
-      "time": "3PM – 5PM Daily",
+      "time": "3 PM – 5 PM",
       "price": "$12.99",
-      "save": "Save $3+",
-      "tagline": "The afternoon reset. Traditional banh mi paired with fruit tea.",
+      "save": "$17.99 value",
+      "tagline": "The afternoon reset — Traditional banh mi paired with any fruit tea.",
       "includes": [
         "Traditional Banh Mi",
-        "Fruit Tea with Topping"
+        "Any Fruit Tea",
+        "1 choice of topping"
       ],
       "image": "photos/placeholders/special-placeholder.svg",
       "alt": "Happy Hour Special — photo coming soon"
     },
     {
-      "slug": "tea-upsell",
-      "name": "Fruit Tea Add-On",
-      "time": "All Day · Any Banh Mi",
+      "slug": "all-day-add-on",
+      "name": "All Day Special",
+      "time": "Opening – Closing",
       "price": "+$1.99",
-      "save": "Save ~$4",
-      "tagline": "Tack on a fruit tea with any banh mi order. One per transaction.",
+      "save": "Add-on",
+      "tagline": "Add a fruit tea to any banh mi order for only $1.99.",
       "includes": [
         "Any Fruit Tea",
-        "With any Banh Mi",
-        "One per order"
+        "With any Banh Mi order",
+        "All day, every day"
       ],
       "image": "photos/placeholders/special-placeholder.svg",
-      "alt": "Fruit Tea Add-On — photo coming soon"
-    },
-    {
-      "slug": "grocery-boba",
-      "name": "Grocery Boba Bonus",
-      "time": "5PM – Close",
-      "price": "$1.99",
-      "save": "Save ~$5",
-      "tagline": "Spend $30+ on groceries, take home a fresh boba for $1.99.",
-      "includes": [
-        "Any Boba Drink",
-        "$30+ grocery purchase",
-        "One per transaction"
-      ],
-      "image": "photos/placeholders/special-placeholder.svg",
-      "alt": "Grocery Boba Bonus — photo coming soon"
+      "alt": "All Day Fruit Tea Add-On — photo coming soon"
     }
   ]
 }

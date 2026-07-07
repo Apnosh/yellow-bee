@@ -1,23 +1,30 @@
 {
+  "note": "All milk teas made with non-dairy creamer.",
   "items": [
-    { "name": "Strawberry Slush", "price": "$6.50", "image": "photos/drinks/528dbd82-7d12-4d89-a243-676f64f9ba6f.webp", "alt": "Strawberry Slush" },
-    { "name": "Matcha Boba", "price": "$6.50", "image": "photos/drinks/528dbd82-7d12-4d89-a243-676f64f9ba6f-2.webp", "alt": "Matcha Boba" },
-    { "name": "Mango Passion", "price": "$7.00", "image": "photos/drinks/528dbd82-7d12-4d89-a243-676f64f9ba6f-3.webp", "alt": "Mango Passion" },
-    { "name": "Taro Milk Tea", "price": "$6.50", "image": "photos/drinks/528dbd82-7d12-4d89-a243-676f64f9ba6f-1.webp", "alt": "Taro Milk Tea" },
-    { "name": "Lemon Black Tea", "price": "$5.50", "image": "photos/drinks/528dbd82-7d12-4d89-a243-676f64f9ba6f-6.webp", "alt": "Lemon Black Tea" }
+    { "name": "Classic Milk Tea",     "price": "$7", "desc": "Classic black milk tea.",                                            "popular": true,  "image": "photos/drinks/528dbd82-7d12-4d89-a243-676f64f9ba6f-2.webp", "alt": "Classic Milk Tea" },
+    { "name": "Bee Berry Milk Tea",   "price": "$7", "desc": "Strawberry milk tea made with freshly brewed black tea.",           "image": "photos/drinks/528dbd82-7d12-4d89-a243-676f64f9ba6f.webp",   "alt": "Bee Berry Milk Tea" },
+    { "name": "Mama Mango Milk Tea",  "price": "$7", "desc": "Mango milk tea made with freshly brewed black tea.",               "image": "photos/drinks/528dbd82-7d12-4d89-a243-676f64f9ba6f-3.webp", "alt": "Mama Mango Milk Tea" },
+    { "name": "Queen Bee Milk Tea",   "price": "$7", "desc": "Brown sugar milk tea made with freshly brewed black tea.",         "popular": true,  "image": "photos/drinks/528dbd82-7d12-4d89-a243-676f64f9ba6f-1.webp", "alt": "Queen Bee Milk Tea" },
+    { "name": "Lychee Milk Tea",      "price": "$7", "desc": "Lychee milk tea made with freshly brewed black tea." },
+    { "name": "Thai Milk Tea",        "price": "$7", "desc": "Freshly brewed Thai milk tea.",                                    "popular": true },
+    { "name": "Strawberry Bloom Tea", "price": "$7", "desc": "Refreshing strawberry green tea with a bright, lightly sweet finish." },
+    { "name": "Lychee Bloom Tea",     "price": "$7", "desc": "Refreshing lychee green tea with a bright, lightly sweet finish." },
+    { "name": "Mango Bloom Tea",      "price": "$7", "desc": "Refreshing mango green tea with a bright, lightly sweet finish." },
+    { "name": "Hive Taro Smoothie",   "price": "$7", "desc": "Creamy taro blended into a smooth, lightly sweet smoothie." },
+    { "name": "Avocado Smoothie",     "price": "$8", "desc": "Creamy avocado blended with condensed milk for a smooth, lightly sweet smoothie.", "popular": true },
+    { "name": "Bee Berry Smoothie",   "price": "$7", "desc": "Classic creamy strawberry smoothie." },
+    { "name": "Mama Mango Smoothie",  "price": "$7", "desc": "Classic creamy mango smoothie." }
   ],
   "toppings": {
-    "label": "Customize Your Toppings",
-    "price": "+$0.75 per topping",
+    "label": "Toppings",
+    "price": "$0.75+",
     "list": [
-      "Boba Pearls",
-      "Coconut Jelly",
       "Rainbow Jelly",
-      "Aloe Vera",
+      "Coconut Jelly",
+      "Lychee Jelly",
       "Lychee Popping Boba",
-      "Grass Jelly",
-      "Egg Pudding",
-      "Red Bean"
+      "Crystal Boba",
+      "Tapioca"
     ]
   }
 }
