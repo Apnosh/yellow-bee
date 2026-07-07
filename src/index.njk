@@ -200,33 +200,38 @@ permalink: /index.html
     </div>
   </div>
 
-  {% if apnosh.menu and apnosh.menu['Boba'] %}
-    {%- set bobaWithPhotos = [] -%}
+  {# Home page shows exactly 3 boba cards. Prefer portal items with
+     photoUrl; if portal has fewer than 3 with photos, fall back to
+     the local drinks.items list (5 with photos). Either way, cap
+     the loop at 3. #}
+  {%- set bobaWithPhotos = [] -%}
+  {%- if apnosh.menu and apnosh.menu['Boba'] -%}
     {%- for item in apnosh.menu['Boba'].items -%}
       {%- if item.photoUrl -%}
         {%- set bobaWithPhotos = bobaWithPhotos.concat([item]) -%}
       {%- endif -%}
     {%- endfor -%}
-    <div class="drinks-showcase">
-      {% for item in bobaWithPhotos %}
-      <div class="drink-card reveal d{{ loop.index }}">
-        <div class="drink-card-img"><img src="{{ item.photoUrl }}" alt="{{ item.name }}" loading="lazy" decoding="async"></div>
-        <h4>{{ item.name }}</h4>
-        <div class="dp">{{ item.price }}</div>
-      </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <div class="drinks-showcase">
-      {% for drink in drinks.items %}
-      <div class="drink-card reveal d{{ loop.index }}">
-        <div class="drink-card-img"><img src="/{{ drink.image }}" alt="{{ drink.alt }}" loading="lazy" decoding="async"></div>
-        <h4>{{ drink.name }}</h4>
-        <div class="dp">{{ drink.price }}</div>
-      </div>
-      {% endfor %}
-    </div>
-  {% endif %}
+  {%- endif -%}
+  {%- set useLocalDrinks = bobaWithPhotos.length < 3 -%}
+  <div class="drinks-showcase">
+    {% if useLocalDrinks %}
+      {% for drink in drinks.items %}{% if loop.index <= 3 %}
+        <div class="drink-card reveal d{{ loop.index }}">
+          <div class="drink-card-img"><img src="/{{ drink.image }}" alt="{{ drink.alt }}" loading="lazy" decoding="async"></div>
+          <h4>{{ drink.name }}</h4>
+          <div class="dp">{{ drink.price }}</div>
+        </div>
+      {% endif %}{% endfor %}
+    {% else %}
+      {% for item in bobaWithPhotos %}{% if loop.index <= 3 %}
+        <div class="drink-card reveal d{{ loop.index }}">
+          <div class="drink-card-img"><img src="{{ item.photoUrl }}" alt="{{ item.name }}" loading="lazy" decoding="async"></div>
+          <h4>{{ item.name }}</h4>
+          <div class="dp">{{ item.price }}</div>
+        </div>
+      {% endif %}{% endfor %}
+    {% endif %}
+  </div>
 
   {% if apnosh.menu and apnosh.menu['Toppings'] and apnosh.menu['Toppings'].modifiers.length > 0 %}
   <div class="toppings reveal">
