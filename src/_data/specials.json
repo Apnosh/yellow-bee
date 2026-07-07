@@ -1,7 +1,7 @@
 {
   "chapter": "Daily Specials",
   "headline": "Daily Specials.",
-  "meta": "Combos & discounts — every day.",
+  "meta": "Four ways to save — every day.",
   "items": [
     {
       "slug": "break-your-fast",
@@ -47,6 +47,21 @@
       ],
       "image": "photos/placeholders/special-placeholder.svg",
       "alt": "All Day Fruit Tea Add-On — photo coming soon"
+    },
+    {
+      "slug": "grocery-boba",
+      "name": "Grocery Boba Bonus",
+      "time": "5 PM – Close",
+      "price": "$1.99",
+      "save": "$30+ grocery purchase",
+      "tagline": "Spend $30 on groceries, take home a fresh boba for $1.99.",
+      "includes": [
+        "Any Boba Drink",
+        "$30+ grocery purchase",
+        "One per transaction"
+      ],
+      "image": "photos/placeholders/special-placeholder.svg",
+      "alt": "Grocery Boba Bonus — photo coming soon"
     }
   ]
 }
