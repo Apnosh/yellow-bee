@@ -323,7 +323,7 @@ tickerItems:
   {%- set featuredName = menu.espresso.featured.name -%}
   {%- set featuredDesc = menu.espresso.featured.desc -%}
   {%- set featuredPrice = menu.espresso.featured.price -%}
-  {%- set featuredPhoto = false -%}
+  {%- set featuredPhoto = menu.espresso.featured.image and ('/' + menu.espresso.featured.image) -%}
 {%- endif -%}
 
 <section class="menu-section menu-section--paper" id="espresso">

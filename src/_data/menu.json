@@ -131,7 +131,9 @@
       "name": "Pandan Matcha Delight",
       "desc": "Ceremonial matcha latte topped with salted pandan cold foam.",
       "price": "$8",
-      "tag": "Special"
+      "tag": "Special",
+      "image": "photos/drinks/pandan-matcha.jpg",
+      "alt": "Pandan Matcha Delight"
     },
     "items": [
       { "name": "Vietnamese White Drip", "desc": "Slow-brewed Vietnamese drip coffee layered with condensed milk for a bold yet silky finish.", "price": "$6", "popular": true },
