@@ -360,22 +360,22 @@
 }
 /* Per-card override: shrink Grocery Boba Bonus photo so the milk tea
    doesn't fill the whole frame like the other (food) photos do. */
-.special-card[data-slug="grocery-boba-bonus"] .special-img img {
+.special-card[data-slug="grocery-boba"] .special-img img {
   object-fit: contain;
-  padding: 1.5rem;
+  padding: 2rem;
 }
-.special-card[data-slug="grocery-boba-bonus"]:hover .special-img img {
+.special-card[data-slug="grocery-boba"]:hover .special-img img {
   transform: scale(1.03);
 }
 /* Per-card override: Break Your Fast Combo photo has a tall coffee cup
    that gets clipped by the time/save badges at the top. Shrink slightly
    and push down so it clears the badges. */
-.special-card[data-slug="break-your-fast-combo"] .special-img img {
+.special-card[data-slug="break-your-fast"] .special-img img {
   object-fit: contain;
   transform: scale(1.6) translateY(5%);
   transform-origin: center center;
 }
-.special-card[data-slug="break-your-fast-combo"]:hover .special-img img {
+.special-card[data-slug="break-your-fast"]:hover .special-img img {
   /* Keep the image steady on hover -- the card itself still lifts via the
      generic .special-card:hover rule, but the photo shouldn't grow/shrink
      since starting scale is already 1.6. */

@@ -115,7 +115,7 @@ permalink: /index.html
         {% endfor %}
       {% else %}
         {% for s in specials.items %}
-        <article class="special-card reveal d{{ loop.index }}">
+        <article class="special-card reveal d{{ loop.index }}" data-slug="{{ s.slug }}">
           <div class="special-img">
             <img src="/{{ s.image }}" alt="{{ s.alt }}" loading="lazy" decoding="async">
             <div class="special-img-badges">
