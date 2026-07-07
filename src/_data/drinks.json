@@ -1,19 +1,19 @@
 {
   "note": "All milk teas made with non-dairy creamer.",
   "items": [
-    { "name": "Classic Milk Tea",     "price": "$7", "desc": "Classic black milk tea.",                                          "popular": true },
+    { "name": "Classic Milk Tea",     "price": "$7", "desc": "Classic black milk tea.",                                          "popular": true, "featured": true, "image": "photos/drinks/classic-milk-tea.jpg", "alt": "Classic Milk Tea" },
     { "name": "Bee Berry Milk Tea",   "price": "$7", "desc": "Strawberry milk tea made with freshly brewed black tea." },
     { "name": "Mama Mango Milk Tea",  "price": "$7", "desc": "Mango milk tea made with freshly brewed black tea." },
     { "name": "Queen Bee Milk Tea",   "price": "$7", "desc": "Brown sugar milk tea made with freshly brewed black tea.",         "popular": true },
     { "name": "Lychee Milk Tea",      "price": "$7", "desc": "Lychee milk tea made with freshly brewed black tea." },
-    { "name": "Thai Milk Tea",        "price": "$7", "desc": "Freshly brewed Thai milk tea.",                                    "popular": true },
+    { "name": "Thai Milk Tea",        "price": "$7", "desc": "Freshly brewed Thai milk tea.",                                    "popular": true, "featured": true, "image": "photos/drinks/thai-milk-tea.jpg", "alt": "Thai Milk Tea" },
     { "name": "Strawberry Bloom Tea", "price": "$7", "desc": "Refreshing strawberry green tea with a bright, lightly sweet finish." },
     { "name": "Lychee Bloom Tea",     "price": "$7", "desc": "Refreshing lychee green tea with a bright, lightly sweet finish." },
-    { "name": "Mango Bloom Tea",      "price": "$7", "desc": "Refreshing mango green tea with a bright, lightly sweet finish." },
-    { "name": "Hive Taro Smoothie",   "price": "$7", "desc": "Creamy taro blended into a smooth, lightly sweet smoothie.",                                            "featured": true, "image": "photos/drinks/hive-taro-smoothie.jpg",   "alt": "Hive Taro Smoothie" },
-    { "name": "Avocado Smoothie",     "price": "$8", "desc": "Creamy avocado blended with condensed milk for a smooth, lightly sweet smoothie.", "popular": true, "featured": true, "image": "photos/drinks/avocado-smoothie.jpg",     "alt": "Avocado Smoothie" },
+    { "name": "Mango Bloom Tea",      "price": "$7", "desc": "Refreshing mango green tea with a bright, lightly sweet finish.",  "featured": true, "image": "photos/drinks/mango-bloom-tea.jpg", "alt": "Mango Bloom Tea" },
+    { "name": "Hive Taro Smoothie",   "price": "$7", "desc": "Creamy taro blended into a smooth, lightly sweet smoothie." },
+    { "name": "Avocado Smoothie",     "price": "$8", "desc": "Creamy avocado blended with condensed milk for a smooth, lightly sweet smoothie.", "popular": true },
     { "name": "Bee Berry Smoothie",   "price": "$7", "desc": "Classic creamy strawberry smoothie." },
-    { "name": "Mama Mango Smoothie",  "price": "$7", "desc": "Classic creamy mango smoothie.",                                                                        "featured": true, "image": "photos/drinks/mama-mango-smoothie.jpg", "alt": "Mama Mango Smoothie" }
+    { "name": "Mama Mango Smoothie",  "price": "$7", "desc": "Classic creamy mango smoothie." }
   ],
   "toppings": {
     "label": "Toppings",

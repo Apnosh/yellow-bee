@@ -30,8 +30,8 @@
         "Any Fruit Tea",
         "1 choice of topping"
       ],
-      "image": "photos/placeholders/special-placeholder.svg",
-      "alt": "Happy Hour Special — photo coming soon"
+      "image": "photos/specials/happy-hour.jpg",
+      "alt": "Happy Hour Special — Traditional banh mi with fruit tea"
     },
     {
       "slug": "all-day-add-on",
@@ -45,8 +45,8 @@
         "With any Banh Mi order",
         "All day, every day"
       ],
-      "image": "photos/placeholders/special-placeholder.svg",
-      "alt": "All Day Fruit Tea Add-On — photo coming soon"
+      "image": "photos/specials/all-day.jpg",
+      "alt": "All Day Special — banh mi with fruit tea"
     },
     {
       "slug": "grocery-boba",
@@ -60,8 +60,8 @@
         "$30+ grocery purchase",
         "One per transaction"
       ],
-      "image": "photos/placeholders/special-placeholder.svg",
-      "alt": "Grocery Boba Bonus — photo coming soon"
+      "image": "photos/drinks/classic-milk-tea.jpg",
+      "alt": "Grocery Boba Bonus — Classic Milk Tea"
     }
   ]
 }
