@@ -224,7 +224,7 @@ tickerItems:
     <div class="menu-drinks-grid menu-drinks-grid--featured">
       {% for item in bobaFeatured %}
         {%- set imgSrc = item.photoUrl or (item.image and ('/' + item.image)) or '/photos/placeholders/special-placeholder.svg' -%}
-      <article class="drink-menu-card reveal d{{ loop.index }}">
+      <article class="drink-menu-card reveal d{{ loop.index }}" data-slug="{{ item.name | lower | replace(' ', '-') }}">
         <div class="drink-menu-card-img">
           <img src="{{ imgSrc }}" alt="{{ item.name }}" loading="lazy" decoding="async">
         </div>

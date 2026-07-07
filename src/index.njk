@@ -219,7 +219,7 @@ permalink: /index.html
         {%- set portalMatch = (apnosh.menu['Boba'].items | selectattr('name', 'equalto', item.name) | first) -%}
       {%- endif -%}
       {%- set imgSrc = (portalMatch and portalMatch.photoUrl) or (item.image and ('/' + item.image)) or '/photos/placeholders/special-placeholder.svg' -%}
-      <div class="drink-card reveal d{{ loop.index }}">
+      <div class="drink-card reveal d{{ loop.index }}" data-slug="{{ item.name | lower | replace(' ', '-') }}">
         <div class="drink-card-img"><img src="{{ imgSrc }}" alt="{{ item.name }}" loading="lazy" decoding="async"></div>
         <h4>{{ item.name }}</h4>
         <div class="dp">{{ item.price }}</div>

@@ -522,6 +522,7 @@
   width: 100%; height: 100%; object-fit: contain;
   filter: drop-shadow(0 14px 32px rgba(0,0,0,0.4));
 }
+.menu-drinks-grid--featured .drink-menu-card[data-slug="mango-bloom-tea"] .drink-menu-card-img img { filter: none; }
 .menu-drinks-grid--featured .drink-menu-card-name {
   font-family: var(--display); font-size: 1.4rem; font-weight: 400;
   letter-spacing: 0.01em; text-transform: uppercase;

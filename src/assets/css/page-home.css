@@ -703,6 +703,7 @@
   filter: drop-shadow(0 14px 28px rgba(0,0,0,0.18));
   transition: transform 0.5s var(--ease-out);
 }
+.drink-card[data-slug="mango-bloom-tea"] .drink-card-img img { filter: none; }
 .drink-card:hover .drink-card-img img { transform: rotate(-3deg) translateY(-4px) scale(1.04); }
 .drink-card h4 {
   font-family: var(--display); font-weight: 400;
