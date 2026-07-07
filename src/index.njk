@@ -65,12 +65,14 @@ permalink: /index.html
 </section>
 
 <!-- DAILY SPECIALS
-     Renders from apnosh.specials (managed in the portal). When the
-     client has zero active specials the section auto-hides. Falls
-     back to the local _data/specials.json when the portal is
-     unreachable so the site never goes blank during build issues. -->
+     Renders from apnosh.specials (managed in the portal) when the portal
+     has specials, otherwise falls back to local _data/specials.json.
+     Previously we only used local when the portal was UNREACHABLE, which
+     meant the section disappeared entirely when the portal was connected
+     but simply had zero specials configured — even though we have 3
+     real store specials in the local data. -->
 {%- set hasPortalSpecials = apnosh.specials and apnosh.specials.length > 0 -%}
-{%- set hasLocalSpecials = (not apnosh.meta or not apnosh.meta.generatedAt) and specials.items and specials.items.length > 0 -%}
+{%- set hasLocalSpecials = specials.items and specials.items.length > 0 -%}
 {% if hasPortalSpecials or hasLocalSpecials %}
 <section class="specials" id="specials">
   <div class="specials-mega-bg" aria-hidden="true">Daily</div>

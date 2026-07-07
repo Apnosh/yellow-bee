@@ -49,15 +49,28 @@
 
 <script>
 (function() {
+  const revealables = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
   if (!('IntersectionObserver' in window)) {
-    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => el.classList.add('visible'));
+    revealables.forEach(el => el.classList.add('visible'));
   } else {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) observer.unobserve(entry.target), entry.target.classList.add('visible');
       });
     }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
-    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => observer.observe(el));
+    revealables.forEach(el => observer.observe(el));
+    // Fallback: elements already in the viewport at page-load (common when
+    // arriving via `#anchor` deep-links) can miss the observer's initial
+    // firing on some browsers. Mark those visible immediately.
+    const forceVisible = () => {
+      revealables.forEach(el => {
+        if (el.classList.contains('visible')) return;
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('visible');
+      });
+    };
+    forceVisible();
+    window.addEventListener('load', forceVisible);
   }
 
   const nav = document.getElementById('siteNav');
