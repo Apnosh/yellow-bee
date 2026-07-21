@@ -1,0 +1,238 @@
+---
+title: "Groceries — Yellow Bee"
+description: "Browse the aisles at Yellow Bee. Rice, noodles, sauces, snacks, frozen, fresh produce, and daily essentials at Seattle's modern Asian market."
+permalink: /groceries/index.html
+tickerItems:
+  - "Groceries · Every Aisle"
+  - "Rice · Noodles · Sauces"
+  - "Fresh Produce Daily"
+  - "Snacks · Frozen · Household"
+  - "$1.99 Boba with $30 Grocery Purchase"
+---
+
+{% extends "base.njk" %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="/assets/css/page-groceries.css?v={{ buildHash }}">
+{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<section class="groc-hero">
+  <div class="groc-hero-mega" aria-hidden="true">Aisles</div>
+  <div class="sec-container">
+    <div class="groc-hero-inner reveal">
+      <div class="sec-mark">Chapter 03 / The Aisles</div>
+      <h1 class="groc-title">Groceries.</h1>
+      <p class="groc-lede">
+        {{ catalog.items.length }} items across {{ catalog.categories.length }} aisles.
+        Search it before you drive over.
+      </p>
+
+      {#
+        Honesty banner. The store's POS does not publish live per-item stock,
+        and grocery stock records are wrong more often than not even when a
+        system claims to track them. So this page commits to prices and
+        carries-it-or-not, never a live count.
+      #}
+      <p class="groc-honesty">
+        <span class="groc-honesty-mark" aria-hidden="true"></span>
+        Prices updated {{ catalog.updated }}.
+        We list what we carry, not live counts.
+        {% if catalog.source == 'mock' %}<em>{{ catalog.sourceNote }}</em>{% endif %}
+        Call <a href="tel:+12065380839">{{ site.phone }}</a> to confirm a specific item.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTROLS -->
+<section class="groc-controls" id="grocControls">
+  <div class="sec-container">
+    <div class="groc-controls-inner">
+      <div class="groc-search-wrap">
+        <svg class="groc-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path>
+        </svg>
+        <input
+          type="search"
+          id="grocSearch"
+          class="groc-search"
+          placeholder="Search rice, sriracha, shin ramyun&hellip;"
+          autocomplete="off"
+          aria-label="Search groceries">
+        <button type="button" class="groc-search-clear" id="grocClear" aria-label="Clear search" hidden>&times;</button>
+      </div>
+      <div class="groc-count" id="grocCount" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="groc-chips" role="group" aria-label="Filter by aisle">
+      <button type="button" class="groc-chip is-active" data-cat="all">All</button>
+      {% for c in catalog.categories %}
+      <button type="button" class="groc-chip" data-cat="{{ c.name }}">{{ c.name }} <span>{{ c.count }}</span></button>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- CATALOG -->
+<section class="groc-body">
+  <div class="sec-container">
+
+    <div class="groc-empty" id="grocEmpty" hidden>
+      <div class="groc-empty-mark">?</div>
+      <h3>Nothing matched that.</h3>
+      <p>Try a shorter word, or give us a call and we'll check the shelf for you.</p>
+      <a href="tel:+12065380839" class="btn btn-dark">Call {{ site.phone }}</a>
+    </div>
+
+    {% for c in catalog.categories %}
+    <div class="groc-cat" data-cat-section="{{ c.name }}">
+      <div class="groc-cat-head">
+        <h2 class="groc-cat-name">{{ c.name }}</h2>
+        <div class="groc-cat-meta">
+          <span class="groc-cat-aisle">{{ c.aisle }}</span>
+          <span class="groc-cat-count">{{ c.count }} items</span>
+        </div>
+      </div>
+
+      <div class="groc-grid">
+        {% for item in catalog.items %}
+        {% if item.category == c.name %}
+        <article class="groc-item"
+                 data-name="{{ item.name | lower }}"
+                 data-brand="{{ item.brand | lower }}"
+                 data-cat="{{ item.category }}">
+          <div class="groc-item-top">
+            <h3 class="groc-item-name">{{ item.name }}</h3>
+            {% if item.availability == 'seasonal' %}
+            <span class="groc-tag groc-tag--seasonal">Seasonal</span>
+            {% elif item.availability == 'ask' %}
+            <span class="groc-tag groc-tag--ask">Call first</span>
+            {% endif %}
+          </div>
+          <div class="groc-item-brand">{{ item.brand }}</div>
+          <div class="groc-item-foot">
+            <span class="groc-item-size">{{ item.size }}</span>
+            <span class="groc-item-price">
+              ${{ item.price }}{% if item.byWeight %}<em>/{{ item.size }}</em>{% endif %}
+            </span>
+          </div>
+        </article>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+
+  </div>
+</section>
+
+<!-- FOOT NOTE -->
+<section class="groc-note">
+  <div class="sec-container">
+    <div class="groc-note-inner reveal">
+      <h2>Can't find it?</h2>
+      <p>
+        We carry more than fits on a page, and the shelf changes with what comes in.
+        Call us and we'll walk over and look.
+      </p>
+      <div class="groc-note-ctas">
+        <a href="tel:+12065380839" class="btn btn-yellow">Call {{ site.phone }}</a>
+        <a href="/locations/" class="btn btn-outline-dark">Get Directions</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var search  = document.getElementById('grocSearch');
+  var clear   = document.getElementById('grocClear');
+  var count   = document.getElementById('grocCount');
+  var empty   = document.getElementById('grocEmpty');
+  var chips   = Array.prototype.slice.call(document.querySelectorAll('.groc-chip'));
+  var items   = Array.prototype.slice.call(document.querySelectorAll('.groc-item'));
+  var catSecs = Array.prototype.slice.call(document.querySelectorAll('.groc-cat'));
+
+  var TOTAL = items.length;
+  var activeCat = 'all';
+
+  // Cache the searchable string once instead of reading attributes per keystroke.
+  var haystacks = items.map(function (el) {
+    return (el.dataset.name + ' ' + el.dataset.brand + ' ' + el.dataset.cat).toLowerCase();
+  });
+
+  function apply() {
+    var q = search.value.trim().toLowerCase();
+    var terms = q ? q.split(/\s+/) : [];
+    var shown = 0;
+
+    for (var i = 0; i < items.length; i++) {
+      var el = items[i];
+      var okCat = activeCat === 'all' || el.dataset.cat === activeCat;
+      var okText = true;
+
+      if (okCat && terms.length) {
+        var hay = haystacks[i];
+        for (var t = 0; t < terms.length; t++) {
+          if (hay.indexOf(terms[t]) === -1) { okText = false; break; }
+        }
+      }
+
+      var visible = okCat && okText;
+      el.hidden = !visible;
+      if (visible) shown++;
+    }
+
+    // Hide any aisle whose items all filtered out.
+    catSecs.forEach(function (sec) {
+      var any = sec.querySelector('.groc-item:not([hidden])');
+      sec.hidden = !any;
+    });
+
+    empty.hidden = shown !== 0;
+    clear.hidden = q === '';
+
+    if (!q && activeCat === 'all') {
+      count.textContent = TOTAL + ' items';
+    } else {
+      count.textContent = shown + ' of ' + TOTAL;
+    }
+  }
+
+  // Debounce so long lists stay smooth while typing.
+  var timer;
+  search.addEventListener('input', function () {
+    clearTimeout(timer);
+    timer = setTimeout(apply, 90);
+  });
+
+  clear.addEventListener('click', function () {
+    search.value = '';
+    apply();
+    search.focus();
+  });
+
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      chips.forEach(function (c) { c.classList.remove('is-active'); });
+      chip.classList.add('is-active');
+      activeCat = chip.dataset.cat;
+      apply();
+      // Jump back up so the filtered result starts in view.
+      var controls = document.getElementById('grocControls');
+      if (controls && controls.getBoundingClientRect().top < 0) {
+        controls.scrollIntoView({ block: 'start' });
+      }
+    });
+  });
+
+  apply();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,256 @@
+/* ─────────────────────────────────────────────────
+   GROCERIES — the aisles
+   Dense and scannable. Grocery item files carry no
+   photos, so this page earns its keep with search
+   and density rather than imagery.
+   ───────────────────────────────────────────────── */
+
+/* ─── HERO ─── */
+.groc-hero {
+  position: relative;
+  background: var(--paper);
+  padding: calc(5rem + 60px) 0 2.5rem;
+  overflow: hidden;
+  border-bottom: 1px solid var(--light-border);
+}
+.groc-hero-mega {
+  position: absolute; top: 50%; right: -2%;
+  transform: translateY(-50%);
+  font-family: var(--display); font-size: clamp(8rem, 22vw, 20rem);
+  line-height: 0.8; color: rgba(46,45,50,0.04);
+  pointer-events: none; user-select: none; white-space: nowrap;
+}
+.groc-hero-inner { position: relative; z-index: 2; max-width: 760px; }
+.groc-title {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(3rem, 8vw, 5.5rem); line-height: 0.92;
+  text-transform: uppercase; color: var(--text-dark);
+  margin: 0.5rem 0 0.75rem;
+}
+.groc-lede {
+  font-size: clamp(1.05rem, 2vw, 1.3rem); line-height: 1.5;
+  color: var(--text-dark-secondary); margin-bottom: 1.25rem;
+}
+
+/* Honesty banner — deliberately plain, not a marketing callout */
+.groc-honesty {
+  display: flex; align-items: flex-start; gap: 0.6rem; flex-wrap: wrap;
+  font-size: 0.87rem; line-height: 1.55;
+  color: var(--text-dark-secondary);
+  background: var(--white); border: 1px solid var(--light-border);
+  border-left: 3px solid var(--yellow);
+  border-radius: 6px; padding: 0.85rem 1rem;
+}
+.groc-honesty em { font-style: italic; color: var(--text-dark-muted); }
+.groc-honesty a { color: var(--yellow-deep); font-weight: 600; text-decoration: underline; }
+.groc-honesty-mark {
+  flex: none; width: 8px; height: 8px; margin-top: 0.45rem;
+  border-radius: 50%; background: var(--yellow);
+}
+
+/* ─── CONTROLS (sticky) ─── */
+/* The nav is fixed at 0 (81px tall) and the ticker is fixed at top:80px with a
+   hard 36px height, so the fixed chrome always ends at 116px -- same at every
+   breakpoint, since neither is responsive. Sticking any higher tucks the search
+   input underneath the ticker. */
+.groc-controls {
+  position: sticky; top: 116px; z-index: 30;
+  background: rgba(250,250,245,0.94);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--light-border);
+  padding: 0.9rem 0 0.7rem;
+}
+.groc-controls-inner {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 0.7rem;
+}
+.groc-search-wrap { position: relative; flex: 1; min-width: 0; }
+.groc-search-icon {
+  position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%);
+  width: 17px; height: 17px; color: var(--text-dark-muted); pointer-events: none;
+}
+.groc-search {
+  width: 100%; font-family: var(--body); font-size: 0.98rem;
+  color: var(--text-dark);
+  padding: 0.72rem 2.4rem 0.72rem 2.5rem;
+  background: var(--white);
+  border: 1px solid var(--light-border); border-radius: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none; appearance: none;
+}
+.groc-search::-webkit-search-cancel-button { display: none; }
+.groc-search:focus {
+  outline: none; border-color: var(--yellow);
+  box-shadow: 0 0 0 3px var(--yellow-light);
+}
+.groc-search-clear {
+  position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
+  width: 26px; height: 26px; border: 0; border-radius: 50%;
+  background: var(--concrete); color: var(--text-dark-secondary);
+  font-size: 1.1rem; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+/* display:flex above beats the [hidden] UA default, so restate it. */
+.groc-search-clear[hidden] { display: none; }
+.groc-search-clear:hover { background: var(--yellow-soft); }
+.groc-count {
+  flex: none; font-family: var(--mono); font-size: 0.76rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text-dark-muted); white-space: nowrap;
+}
+
+/* Aisle chips */
+.groc-chips {
+  display: flex; gap: 0.4rem; overflow-x: auto;
+  padding-bottom: 0.25rem;
+  scrollbar-width: thin;
+}
+.groc-chips::-webkit-scrollbar { height: 4px; }
+.groc-chips::-webkit-scrollbar-thumb { background: var(--light-border); border-radius: 2px; }
+.groc-chip {
+  flex: none; cursor: pointer;
+  font-family: var(--heading); font-size: 0.78rem; font-weight: 600;
+  color: var(--text-dark-secondary);
+  background: var(--white); border: 1px solid var(--light-border);
+  border-radius: 100px; padding: 0.4rem 0.8rem;
+  white-space: nowrap; transition: all 0.2s var(--ease-out);
+}
+.groc-chip span {
+  font-family: var(--mono); font-size: 0.68rem; opacity: 0.5;
+  margin-left: 0.3rem;
+}
+.groc-chip:hover { border-color: var(--yellow); color: var(--text-dark); }
+.groc-chip.is-active {
+  background: var(--dark); border-color: var(--dark); color: var(--white);
+}
+.groc-chip.is-active span { opacity: 0.6; }
+
+/* ─── BODY ─── */
+.groc-body { background: var(--off-white); padding: 2.25rem 0 3.5rem; }
+
+.groc-cat { margin-bottom: 2.5rem; }
+.groc-cat[hidden] { display: none; }
+.groc-cat-head {
+  display: flex; align-items: baseline; gap: 0.85rem; flex-wrap: wrap;
+  padding-bottom: 0.6rem; margin-bottom: 1rem;
+  border-bottom: 2px solid var(--dark);
+}
+.groc-cat-name {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(1.5rem, 3vw, 2.1rem); line-height: 1;
+  text-transform: uppercase; color: var(--text-dark); margin: 0;
+}
+.groc-cat-meta {
+  display: flex; gap: 0.6rem; align-items: baseline;
+  font-family: var(--mono); font-size: 0.7rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-dark-muted); margin-left: auto;
+}
+.groc-cat-aisle {
+  background: var(--yellow); color: var(--dark);
+  padding: 0.2rem 0.45rem; border-radius: 3px; font-weight: 700;
+}
+
+/* Dense grid — fills the width, many small tiles */
+.groc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.6rem;
+}
+.groc-item {
+  display: flex; flex-direction: column; gap: 0.15rem;
+  background: var(--white);
+  border: 1px solid var(--light-border); border-radius: 8px;
+  padding: 0.7rem 0.8rem 0.6rem;
+  transition: border-color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+}
+.groc-item[hidden] { display: none; }
+.groc-item:hover {
+  border-color: rgba(253,196,4,0.5);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
+}
+.groc-item-top {
+  display: flex; align-items: flex-start; gap: 0.4rem; justify-content: space-between;
+}
+.groc-item-name {
+  font-family: var(--heading); font-size: 0.87rem; font-weight: 600;
+  line-height: 1.25; color: var(--text-dark); margin: 0;
+}
+.groc-item-brand {
+  font-size: 0.75rem; color: var(--text-dark-muted); line-height: 1.3;
+}
+.groc-item-foot {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 0.5rem; margin-top: 0.45rem;
+  padding-top: 0.45rem; border-top: 1px dashed var(--light-border);
+}
+.groc-item-size {
+  font-family: var(--mono); font-size: 0.7rem;
+  color: var(--text-dark-muted); letter-spacing: 0.02em;
+}
+.groc-item-price {
+  font-family: var(--display); font-size: 1.15rem; font-weight: 400;
+  color: var(--yellow-deep); line-height: 1; white-space: nowrap;
+}
+.groc-item-price em {
+  font-family: var(--mono); font-size: 0.62rem; font-style: normal;
+  opacity: 0.65; letter-spacing: 0;
+}
+
+/* Availability tags — never a number, only a signal */
+.groc-tag {
+  flex: none;
+  font-family: var(--mono); font-size: 0.56rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 0.18rem 0.34rem; border-radius: 3px; white-space: nowrap;
+}
+.groc-tag--seasonal { background: rgba(74,168,74,0.14); color: #2f7a2f; }
+.groc-tag--ask { background: rgba(46,45,50,0.08); color: var(--text-dark-secondary); }
+
+/* Empty state */
+.groc-empty {
+  text-align: center; padding: 3.5rem 1.5rem;
+  background: var(--white); border: 1px dashed var(--light-border);
+  border-radius: 12px;
+}
+.groc-empty[hidden] { display: none; }
+.groc-empty-mark {
+  width: 52px; height: 52px; margin: 0 auto 1rem;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--yellow-soft);
+  font-family: var(--display); font-size: 1.7rem; color: var(--yellow-deep);
+}
+.groc-empty h3 {
+  font-family: var(--display); font-size: 1.6rem; font-weight: 400;
+  text-transform: uppercase; color: var(--text-dark); margin-bottom: 0.4rem;
+}
+.groc-empty p { color: var(--text-dark-secondary); margin-bottom: 1.25rem; }
+
+/* ─── FOOT NOTE ─── */
+.groc-note {
+  background: var(--dark); color: var(--text-light);
+  padding: 3.5rem 0; text-align: center;
+}
+.groc-note-inner { max-width: 620px; margin: 0 auto; }
+.groc-note h2 {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(2rem, 5vw, 3rem); line-height: 1;
+  text-transform: uppercase; color: var(--white); margin-bottom: 0.75rem;
+}
+.groc-note p { color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
+.groc-note-ctas { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 880px) {
+  .groc-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+}
+@media (max-width: 620px) {
+  .groc-hero { padding-top: calc(4rem + 60px); }
+  .groc-controls-inner { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+  .groc-count { text-align: right; }
+  .groc-cat-meta { margin-left: 0; width: 100%; }
+  .groc-grid { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 0.5rem; }
+  .groc-item { padding: 0.6rem 0.65rem 0.5rem; }
+  .groc-item-name { font-size: 0.82rem; }
+}

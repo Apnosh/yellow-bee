@@ -19,6 +19,7 @@
   },
   "nav": [
     { "label": "Menu", "href": "/menu/" },
+    { "label": "Groceries", "href": "/groceries/" },
     { "label": "Locations", "href": "/locations/" },
     { "label": "Careers", "href": "/careers/" },
     { "label": "About Us", "href": "/about/" },
@@ -28,6 +29,7 @@
   "footerNav": {
     "Explore": [
       { "label": "Menu", "href": "/menu/" },
+      { "label": "Groceries", "href": "/groceries/" },
       { "label": "About Us", "href": "/about/" },
       { "label": "Locations", "href": "/locations/" }
     ],
