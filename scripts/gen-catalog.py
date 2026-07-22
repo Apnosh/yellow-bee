@@ -8,6 +8,7 @@ mirror what a grocery POS item file actually carries, so swapping in real data
 is a mapping job, not a rewrite.
 """
 import json
+import re
 import random
 
 random.seed(4242)  # deterministic output so rebuilds don't churn the diff
@@ -450,6 +451,101 @@ AISLES = {
 # integer unit count, which matters for how the site renders availability.
 WEIGHED = {"Fresh Produce", "Meat & Seafood"}
 
+# Country of origin, keyed by brand. Asian markets label this heavily and
+# shoppers genuinely sort on it. A real POS carries it as a item-file column.
+ORIGIN = {
+    "Three Ladies": "Thailand", "Kokuho Rose": "USA", "Nishiki": "USA",
+    "Dynasty": "USA", "Royal": "India", "Lotus Foods": "USA",
+    "Golden Phoenix": "Thailand", "Erawan": "Thailand", "Assi": "Korea",
+    "Golden Bell": "China", "Chantaboon": "Thailand", "Myojo": "Japan",
+    "Twin Marquis": "USA", "Hakubaku": "Japan", "Longkou": "China",
+    "Spring Home": "Singapore", "Sun Noodle": "USA", "Nongshim": "Korea",
+    "Samyang": "Korea", "Ottogi": "Korea", "Nissin": "Japan",
+    "Indomie": "Indonesia", "Mama": "Thailand", "Vifon": "Vietnam",
+    "Paldo": "Korea", "Lee Kum Kee": "Hong Kong", "Pearl River Bridge": "China",
+    "Kikkoman": "Japan", "Huy Fong": "USA", "Three Crabs": "Thailand",
+    "Red Boat": "Vietnam", "Golden Boy": "Thailand", "Kewpie": "Japan",
+    "Chung Jung One": "Korea", "Hikari": "Japan", "Lao Gan Ma": "China",
+    "Mae Ploy": "Thailand", "Maesri": "Thailand", "Cock Brand": "Thailand",
+    "Haidilao": "China", "Little Sheep": "China", "Chinsu": "Vietnam",
+    "Koon Chun": "Hong Kong", "Kadoya": "Japan", "Tsuno": "Japan",
+    "Happy Family": "USA", "Chaokoh": "Thailand", "Marukan": "Japan",
+    "Chinkiang": "China", "Datu Puti": "Philippines", "Silver Swan": "Philippines",
+    "Pagoda": "China", "Takara": "Japan", "Aroy-D": "Thailand",
+    "Chin Chin": "Taiwan", "Kawasho": "Japan", "Ligo": "Philippines",
+    "Hormel": "USA", "Chongga": "Korea", "Glico": "Japan", "Meiji": "Japan",
+    "Calbee": "Japan", "Haitai": "Korea", "Orion": "Korea", "Lotte": "Korea",
+    "Kameda": "Japan", "Hapi": "Japan", "Koh-Kae": "Thailand",
+    "Want Want": "Taiwan", "Gim": "Korea", "Bonita": "Philippines",
+    "Morinaga": "Japan", "White Rabbit": "China", "JFC": "Japan",
+    "Kasugai": "Japan", "Nestle Japan": "Japan", "My/Mo": "USA",
+    "Royal Family": "Taiwan", "Philippine Brand": "Philippines",
+    "Prince of Peace": "USA", "Yakult": "Japan", "Vitasoy": "Hong Kong",
+    "Sangaria": "Japan", "Otsuka": "Japan", "OKF": "Korea", "Foco": "Thailand",
+    "Calpis": "Japan", "Binggrae": "Korea", "Pantai": "Thailand",
+    "Trung Nguyen": "Vietnam", "Cafe Du Monde": "USA", "Ten Ren": "Taiwan",
+    "Yamamotoyama": "Japan", "Dongsuh": "Korea", "Aiya": "Japan",
+    "WuFuYuan": "China", "Bossen": "USA", "Bibigo": "Korea", "Synear": "China",
+    "Feng Wei": "China", "Kawan": "Malaysia", "Kahiki": "USA",
+    "House Foods": "USA", "Pulmuone": "Korea", "Mitoku": "Japan",
+    "Lightlife": "USA", "S&B": "Japan", "Nagatanien": "Japan",
+    "Ajinomoto": "Japan", "Knorr": "USA", "Gia Vi": "Vietnam",
+    "Emerald Cove": "USA", "Marutomo": "Japan", "Koda Farms": "USA",
+    "Shirakiku": "Japan", "Carnation": "USA", "Longevity": "USA",
+    "Koepoe": "Indonesia", "Telephone": "Thailand", "Tiger Balm": "Singapore",
+    "Eagle Brand": "Singapore", "Hoe Hin": "Hong Kong", "Innisfree": "Korea",
+    "The Face Shop": "Korea", "Biore": "Japan", "Kracie": "Japan", "LG": "Korea",
+    "Local": "Washington", "Butcher": "Washington", "Seafood": "Washington",
+    "In-House": "Made here", "Home": "", "Joy": "USA", "Bounty": "USA",
+    "Glad": "USA", "Reynolds": "USA",
+}
+
+# Weekly ad window. A real feed would carry per-item start/end dates; the mock
+# runs one store-wide window, which is how a small market actually operates.
+SALE_ENDS = "July 27"
+
+
+def snap_price(target):
+    """
+    Snap a computed sale price to a grocery-style ending (.99/.79/.49/.29).
+
+    Always rounds DOWN to the nearest valid ending so a "25% off" tag can never
+    produce a price above what the math promised.
+    """
+    endings = [0.99, 0.79, 0.49, 0.29]
+    whole = int(target)
+    candidates = [whole + e for e in endings] + [whole - 1 + e for e in endings]
+    valid = [c for c in candidates if c <= target and c > 0]
+    return round(max(valid), 2) if valid else round(target, 2)
+
+
+def unit_price(price, size):
+    """
+    Derive a $/oz, $/lb, or $/each figure from the pack size.
+
+    Real grocery shelves are required to post unit pricing in many
+    jurisdictions, and it is the single best signal for comparing a 5 lb bag
+    against a 25 lb one. Returns None when the size string has no parseable
+    quantity ("Kit", "bunch", "each").
+    """
+
+    s = size.strip().lower()
+
+    m = re.match(r"^([\d.]+)\s*(oz|lb)$", s)
+    if m:
+        qty, unit = float(m.group(1)), m.group(2)
+        if qty > 0:
+            return {"value": round(price / qty, 2), "unit": unit}
+
+    m = re.match(r"^([\d.]+)[-\s](pack|count|vial|pair|sheet)$", s)
+    if m:
+        qty = float(m.group(1))
+        if qty > 0:
+            return {"value": round(price / qty, 2), "unit": "ea"}
+
+    return None
+
+
 items = []
 sku_n = 100000
 
@@ -459,10 +555,10 @@ for category, entries in CATALOG.items():
             sku_n += 7
             # interpolate price across the size range
             if len(sizes) == 1:
-                price = lo
+                list_price = lo
             else:
                 t = i / (len(sizes) - 1)
-                price = round(lo + (hi - lo) * t, 2)
+                list_price = round(lo + (hi - lo) * t, 2)
 
             # A small share of items are seasonal/special-order in any real store.
             roll = random.random()
@@ -473,7 +569,25 @@ for category, entries in CATALOG.items():
             else:
                 availability = "stocked"
 
-            items.append({
+            # ~17% of the shelf is on the weekly ad at any given time. Seasonal
+            # and special-order items never go on ad.
+            on_sale = availability == "stocked" and random.random() < 0.17
+            if on_sale:
+                pct = random.choice([0.10, 0.15, 0.20, 0.25, 0.30, 0.35])
+                price = snap_price(list_price * (1 - pct))
+                # snap_price never rounds up, but guard the floor anyway so a
+                # sub-dollar item can't land at or above its own list price.
+                if price >= list_price:
+                    price = round(max(0.29, list_price - 0.30), 2)
+                saved = round(list_price - price, 2)
+                # Loss-leader style limits show up on the deepest discounts.
+                limit = random.choice([None, None, "Limit 4", "Limit 2"]) if pct >= 0.25 else None
+            else:
+                price = list_price
+                saved = 0.0
+                limit = None
+
+            item = {
                 "sku": str(sku_n),
                 "name": name,
                 "brand": brand,
@@ -481,27 +595,60 @@ for category, entries in CATALOG.items():
                 "aisle": AISLES[category],
                 "size": size,
                 "price": price,
+                "listPrice": list_price,
+                "onSale": on_sale,
+                "saved": saved,
+                "savedPct": round(saved / list_price * 100) if on_sale and list_price else 0,
+                "limit": limit,
                 "byWeight": category in WEIGHED,
                 "availability": availability,
-            })
+                "origin": ORIGIN.get(brand, ""),
+                "isNew": random.random() < 0.05,
+                "popular": random.random() < 0.09,
+            }
+
+            up = unit_price(price, size)
+            if up:
+                item["unitPrice"] = up["value"]
+                item["unitMeasure"] = up["unit"]
+
+            items.append(item)
 
 items.sort(key=lambda x: (x["category"], x["name"], x["size"]))
 
 categories = []
 for category in CATALOG.keys():
-    count = sum(1 for i in items if i["category"] == category)
-    categories.append({"name": category, "aisle": AISLES[category], "count": count})
+    cat_items = [i for i in items if i["category"] == category]
+    categories.append({
+        "name": category,
+        "aisle": AISLES[category],
+        "count": len(cat_items),
+        "onSale": sum(1 for i in cat_items if i["onSale"]),
+    })
+
+on_sale_items = [i for i in items if i["onSale"]]
+# Lead the weekly ad with the biggest savings, the way a circular does.
+deals = sorted(on_sale_items, key=lambda x: -x["saved"])[:12]
 
 out = {
     "_comment": (
         "MOCK DATA. Stands in for a Star-Plus item-file export until the POS "
         "connection exists. Field names mirror a real grocery POS item file so "
-        "swapping in live data is a mapping job. Regenerate with "
+        "swapping in live data is a mapping job. price/listPrice map to the "
+        "Sale and List price types Star-Plus already carries. Regenerate with "
         "scripts/gen-catalog.py."
     ),
     "source": "mock",
     "updated": "2026-07-21",
+    "saleEnds": SALE_ENDS,
+    "stats": {
+        "items": len(items),
+        "categories": len(categories),
+        "onSale": len(on_sale_items),
+        "newItems": sum(1 for i in items if i["isNew"]),
+    },
     "categories": categories,
+    "deals": [d["sku"] for d in deals],
     "items": items,
 }
 

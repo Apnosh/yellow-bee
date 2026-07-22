@@ -1,12 +1,12 @@
 ---
 title: "Groceries — Yellow Bee"
-description: "Browse the aisles at Yellow Bee. Rice, noodles, sauces, snacks, frozen, fresh produce, and daily essentials at Seattle's modern Asian market."
+description: "Browse the aisles at Yellow Bee. Rice, noodles, sauces, snacks, frozen, fresh produce, and this week's deals at Seattle's modern Asian market."
 permalink: /groceries/index.html
 tickerItems:
   - "Groceries · Every Aisle"
+  - "This Week's Deals"
   - "Rice · Noodles · Sauces"
   - "Fresh Produce Daily"
-  - "Snacks · Frozen · Household"
   - "$1.99 Boba with $30 Grocery Purchase"
 ---
 
@@ -18,6 +18,8 @@ tickerItems:
 
 {% block content %}
 
+{%- set dealSkus = catalog.deals -%}
+
 <!-- HEADER -->
 <section class="groc-hero">
   <div class="groc-hero-mega" aria-hidden="true">Aisles</div>
@@ -26,15 +28,15 @@ tickerItems:
       <div class="sec-mark">Chapter 03 / The Aisles</div>
       <h1 class="groc-title">Groceries.</h1>
       <p class="groc-lede">
-        {{ catalog.items.length }} items across {{ catalog.categories.length }} aisles.
-        Search it before you drive over.
+        {{ catalog.stats.items }} items across {{ catalog.stats.categories }} aisles,
+        with {{ catalog.stats.onSale }} on sale this week.
       </p>
 
       {#
-        Honesty banner. The store's POS does not publish live per-item stock,
-        and grocery stock records are wrong more often than not even when a
-        system claims to track them. So this page commits to prices and
-        carries-it-or-not, never a live count.
+        Honesty banner. The POS does not publish live per-item stock, and
+        grocery stock records are wrong more often than not even when a system
+        claims to track them. This page commits to prices and carries-it-or-not,
+        never a live count.
       #}
       <p class="groc-honesty">
         <span class="groc-honesty-mark" aria-hidden="true"></span>
@@ -46,6 +48,46 @@ tickerItems:
     </div>
   </div>
 </section>
+
+<!-- WEEKLY AD -->
+{% if catalog.stats.onSale > 0 %}
+<section class="groc-deals">
+  <div class="sec-container">
+    <div class="groc-deals-head reveal">
+      <div>
+        <div class="groc-deals-kicker">This Week's Deals</div>
+        <h2 class="groc-deals-title">On Sale Now.</h2>
+      </div>
+      <div class="groc-deals-meta">
+        <span class="groc-deals-through">Through {{ catalog.saleEnds }}</span>
+        <button type="button" class="groc-deals-all" data-jump-sale>See all {{ catalog.stats.onSale }} deals</button>
+      </div>
+    </div>
+
+    <div class="groc-deals-rail">
+      {% for item in catalog.items %}
+      {% if item.sku in dealSkus %}
+      <article class="groc-deal">
+        <div class="groc-deal-save">Save ${{ item.saved | money }}</div>
+        <div class="groc-deal-body">
+          <h3 class="groc-deal-name">{{ item.name }}</h3>
+          <div class="groc-deal-brand">{{ item.brand }} &middot; {{ item.size }}</div>
+        </div>
+        <div class="groc-deal-foot">
+          <div class="groc-deal-prices">
+            <span class="groc-deal-now">${{ item.price | money }}</span>
+            <s class="groc-deal-was">${{ item.listPrice | money }}</s>
+          </div>
+          <div class="groc-deal-pct">{{ item.savedPct }}% off</div>
+        </div>
+        {% if item.limit %}<div class="groc-deal-limit">{{ item.limit }}</div>{% endif %}
+      </article>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
 
 <!-- CONTROLS -->
 <section class="groc-controls" id="grocControls">
@@ -64,14 +106,37 @@ tickerItems:
           aria-label="Search groceries">
         <button type="button" class="groc-search-clear" id="grocClear" aria-label="Clear search" hidden>&times;</button>
       </div>
+
+      <div class="groc-sort-wrap">
+        <label class="groc-sort-label" for="grocSort">Sort</label>
+        <select id="grocSort" class="groc-sort">
+          <option value="aisle">By aisle</option>
+          <option value="savings">Biggest savings</option>
+          <option value="price-asc">Price: low to high</option>
+          <option value="price-desc">Price: high to low</option>
+          <option value="name">Name A&ndash;Z</option>
+        </select>
+      </div>
+
       <div class="groc-count" id="grocCount" role="status" aria-live="polite"></div>
     </div>
 
-    <div class="groc-chips" role="group" aria-label="Filter by aisle">
-      <button type="button" class="groc-chip is-active" data-cat="all">All</button>
-      {% for c in catalog.categories %}
-      <button type="button" class="groc-chip" data-cat="{{ c.name }}">{{ c.name }} <span>{{ c.count }}</span></button>
-      {% endfor %}
+    <div class="groc-filters">
+      <button type="button" class="groc-toggle" id="grocSaleOnly" aria-pressed="false">
+        <span class="groc-toggle-dot"></span>On sale <span class="groc-toggle-n">{{ catalog.stats.onSale }}</span>
+      </button>
+      <button type="button" class="groc-toggle" id="grocNewOnly" aria-pressed="false">
+        <span class="groc-toggle-dot"></span>New <span class="groc-toggle-n">{{ catalog.stats.newItems }}</span>
+      </button>
+
+      <div class="groc-chips" role="group" aria-label="Filter by aisle">
+        <button type="button" class="groc-chip is-active" data-cat="all">All</button>
+        {% for c in catalog.categories %}
+        <button type="button" class="groc-chip" data-cat="{{ c.name }}">
+          {{ c.name }} <span>{{ c.count }}</span>
+        </button>
+        {% endfor %}
+      </div>
     </div>
   </div>
 </section>
@@ -87,47 +152,110 @@ tickerItems:
       <a href="tel:+12065380839" class="btn btn-dark">Call {{ site.phone }}</a>
     </div>
 
-    {% for c in catalog.categories %}
-    <div class="groc-cat" data-cat-section="{{ c.name }}">
-      <div class="groc-cat-head">
+    {#
+      One flat grid holds every item plus the aisle headers, with headers
+      spanning the full row. Keeping it flat means sorting is a re-append
+      rather than a re-render, and the aisle grouping is just the default
+      order we restore when sort returns to "By aisle".
+    #}
+    <div class="groc-grid" id="grocGrid">
+      {% for c in catalog.categories %}
+      <div class="groc-cat-head" data-cat-head="{{ c.name }}">
         <h2 class="groc-cat-name">{{ c.name }}</h2>
         <div class="groc-cat-meta">
+          {% if c.onSale > 0 %}<span class="groc-cat-sale">{{ c.onSale }} on sale</span>{% endif %}
           <span class="groc-cat-aisle">{{ c.aisle }}</span>
           <span class="groc-cat-count">{{ c.count }} items</span>
         </div>
       </div>
 
-      <div class="groc-grid">
-        {% for item in catalog.items %}
-        {% if item.category == c.name %}
-        <article class="groc-item"
-                 data-name="{{ item.name | lower }}"
-                 data-brand="{{ item.brand | lower }}"
-                 data-cat="{{ item.category }}">
-          <div class="groc-item-top">
-            <h3 class="groc-item-name">{{ item.name }}</h3>
-            {% if item.availability == 'seasonal' %}
-            <span class="groc-tag groc-tag--seasonal">Seasonal</span>
-            {% elif item.availability == 'ask' %}
-            <span class="groc-tag groc-tag--ask">Call first</span>
+      {% for item in catalog.items %}
+      {% if item.category == c.name %}
+      <article class="groc-item{% if item.onSale %} is-sale{% endif %}"
+               tabindex="0" role="button"
+               aria-label="{{ item.name }}, {{ item.brand }}, {{ item.size }}, ${{ item.price | money }}"
+               data-name="{{ item.name | lower }}"
+               data-brand="{{ item.brand | lower }}"
+               data-origin-l="{{ item.origin | lower }}"
+               data-cat="{{ item.category }}"
+               data-sale="{{ 1 if item.onSale else 0 }}"
+               data-new="{{ 1 if item.isNew else 0 }}"
+               data-price="{{ item.price }}"
+               data-saved="{{ item.saved }}"
+               data-sort-name="{{ item.name }}"
+               data-d-name="{{ item.name }}"
+               data-d-brand="{{ item.brand }}"
+               data-d-size="{{ item.size }}"
+               data-d-cat="{{ item.category }}"
+               data-d-aisle="{{ item.aisle }}"
+               data-d-sku="{{ item.sku }}"
+               data-d-origin="{{ item.origin }}"
+               data-d-price="{{ item.price | money }}"
+               data-d-list="{{ item.listPrice | money }}"
+               data-d-saved="{{ item.saved | money }}"
+               data-d-pct="{{ item.savedPct }}"
+               data-d-limit="{{ item.limit or '' }}"
+               data-d-avail="{{ item.availability }}"
+               data-d-weight="{{ 1 if item.byWeight else 0 }}"
+               {% if item.unitPrice %}data-d-unit="${{ item.unitPrice | money }}/{{ item.unitMeasure }}"{% endif %}>
+
+        <div class="groc-item-top">
+          <h3 class="groc-item-name">{{ item.name }}</h3>
+          <div class="groc-item-flags">
+            {% if item.onSale %}<span class="groc-tag groc-tag--sale">Sale</span>{% endif %}
+            {% if item.isNew %}<span class="groc-tag groc-tag--new">New</span>{% endif %}
+            {% if item.availability == 'seasonal' %}<span class="groc-tag groc-tag--seasonal">Seasonal</span>{% endif %}
+            {% if item.availability == 'ask' %}<span class="groc-tag groc-tag--ask">Call first</span>{% endif %}
+          </div>
+        </div>
+
+        <div class="groc-item-brand">{{ item.brand }}</div>
+
+        <div class="groc-item-foot">
+          <div class="groc-item-left">
+            <span class="groc-item-size">{{ item.size }}</span>
+            {% if item.unitPrice %}
+            <span class="groc-item-unit">${{ item.unitPrice | money }}/{{ item.unitMeasure }}</span>
             {% endif %}
           </div>
-          <div class="groc-item-brand">{{ item.brand }}</div>
-          <div class="groc-item-foot">
-            <span class="groc-item-size">{{ item.size }}</span>
-            <span class="groc-item-price">
-              ${{ item.price }}{% if item.byWeight %}<em>/{{ item.size }}</em>{% endif %}
-            </span>
+          <div class="groc-item-pricing">
+            {% if item.onSale %}
+            <span class="groc-item-price is-sale">${{ item.price | money }}{% if item.byWeight %}<em>/{{ item.size }}</em>{% endif %}</span>
+            <s class="groc-item-was">${{ item.listPrice | money }}</s>
+            {% else %}
+            <span class="groc-item-price">${{ item.price | money }}{% if item.byWeight %}<em>/{{ item.size }}</em>{% endif %}</span>
+            {% endif %}
           </div>
-        </article>
-        {% endif %}
-        {% endfor %}
-      </div>
+        </div>
+      </article>
+      {% endif %}
+      {% endfor %}
+      {% endfor %}
     </div>
-    {% endfor %}
 
   </div>
 </section>
+
+<!-- ITEM DETAIL -->
+<div class="groc-modal" id="grocModal" hidden>
+  <div class="groc-modal-backdrop" data-close></div>
+  <div class="groc-modal-panel" role="dialog" aria-modal="true" aria-labelledby="grocModalName">
+    <button type="button" class="groc-modal-x" data-close aria-label="Close">&times;</button>
+
+    <div class="groc-modal-flags" id="grocModalFlags"></div>
+    <h2 class="groc-modal-name" id="grocModalName"></h2>
+    <div class="groc-modal-brand" id="grocModalBrand"></div>
+
+    <div class="groc-modal-pricing" id="grocModalPricing"></div>
+
+    <dl class="groc-modal-spec" id="grocModalSpec"></dl>
+
+    <p class="groc-modal-note">
+      We don't publish live stock counts. Call and we'll walk over and look.
+    </p>
+    <a href="tel:+12065380839" class="btn btn-yellow groc-modal-call">Call {{ site.phone }}</a>
+  </div>
+</div>
 
 <!-- FOOT NOTE -->
 <section class="groc-note">
@@ -151,61 +279,112 @@ tickerItems:
 {% block scripts %}
 <script>
 (function () {
-  var search  = document.getElementById('grocSearch');
-  var clear   = document.getElementById('grocClear');
-  var count   = document.getElementById('grocCount');
-  var empty   = document.getElementById('grocEmpty');
-  var chips   = Array.prototype.slice.call(document.querySelectorAll('.groc-chip'));
-  var items   = Array.prototype.slice.call(document.querySelectorAll('.groc-item'));
-  var catSecs = Array.prototype.slice.call(document.querySelectorAll('.groc-cat'));
+  var search   = document.getElementById('grocSearch');
+  var clear    = document.getElementById('grocClear');
+  var sortSel  = document.getElementById('grocSort');
+  var saleOnly = document.getElementById('grocSaleOnly');
+  var newOnly  = document.getElementById('grocNewOnly');
+  var count    = document.getElementById('grocCount');
+  var empty    = document.getElementById('grocEmpty');
+  var grid     = document.getElementById('grocGrid');
+
+  var chips = [].slice.call(document.querySelectorAll('.groc-chip'));
+  var items = [].slice.call(grid.querySelectorAll('.groc-item'));
+  var heads = [].slice.call(grid.querySelectorAll('.groc-cat-head'));
 
   var TOTAL = items.length;
   var activeCat = 'all';
 
-  // Cache the searchable string once instead of reading attributes per keystroke.
-  var haystacks = items.map(function (el) {
-    return (el.dataset.name + ' ' + el.dataset.brand + ' ' + el.dataset.cat).toLowerCase();
+  // Authored DOM order (headers interleaved) so "by aisle" restores exactly
+  // rather than being reconstructed.
+  var originalOrder = [].slice.call(grid.children);
+
+  // Cache search text and sort keys once instead of touching the DOM per keystroke.
+  var meta = items.map(function (el) {
+    return {
+      el: el,
+      hay: (el.dataset.name + ' ' + el.dataset.brand + ' ' +
+            el.dataset.originL + ' ' + el.dataset.cat).toLowerCase(),
+      price: parseFloat(el.dataset.price) || 0,
+      saved: parseFloat(el.dataset.saved) || 0,
+      name: el.dataset.sortName || '',
+      sale: el.dataset.sale === '1',
+      isNew: el.dataset.new === '1'
+    };
   });
+
+  // Which aisle headers currently make sense. Any global sort breaks the
+  // grouping, so headers hide entirely outside the aisle view.
+  var headsSuppressed = false;
+
+  function applySort() {
+    var mode = sortSel.value;
+
+    if (mode === 'aisle') {
+      var frag = document.createDocumentFragment();
+      originalOrder.forEach(function (node) { frag.appendChild(node); });
+      grid.appendChild(frag);
+      headsSuppressed = false;
+      return;
+    }
+
+    headsSuppressed = true;
+
+    var sorted = meta.slice();
+    if (mode === 'savings')         sorted.sort(function (a, b) { return b.saved - a.saved; });
+    else if (mode === 'price-asc')  sorted.sort(function (a, b) { return a.price - b.price; });
+    else if (mode === 'price-desc') sorted.sort(function (a, b) { return b.price - a.price; });
+    else if (mode === 'name')       sorted.sort(function (a, b) { return a.name.localeCompare(b.name); });
+
+    var frag2 = document.createDocumentFragment();
+    sorted.forEach(function (m) { frag2.appendChild(m.el); });
+    grid.appendChild(frag2);
+  }
 
   function apply() {
     var q = search.value.trim().toLowerCase();
     var terms = q ? q.split(/\s+/) : [];
+    var wantSale = saleOnly.getAttribute('aria-pressed') === 'true';
+    var wantNew  = newOnly.getAttribute('aria-pressed') === 'true';
     var shown = 0;
 
-    for (var i = 0; i < items.length; i++) {
-      var el = items[i];
-      var okCat = activeCat === 'all' || el.dataset.cat === activeCat;
-      var okText = true;
+    for (var i = 0; i < meta.length; i++) {
+      var m = meta[i];
+      var ok = activeCat === 'all' || m.el.dataset.cat === activeCat;
+      if (ok && wantSale && !m.sale) ok = false;
+      if (ok && wantNew && !m.isNew) ok = false;
 
-      if (okCat && terms.length) {
-        var hay = haystacks[i];
+      if (ok && terms.length) {
         for (var t = 0; t < terms.length; t++) {
-          if (hay.indexOf(terms[t]) === -1) { okText = false; break; }
+          if (m.hay.indexOf(terms[t]) === -1) { ok = false; break; }
         }
       }
 
-      var visible = okCat && okText;
-      el.hidden = !visible;
-      if (visible) shown++;
+      m.el.hidden = !ok;
+      if (ok) shown++;
     }
 
-    // Hide any aisle whose items all filtered out.
-    catSecs.forEach(function (sec) {
-      var any = sec.querySelector('.groc-item:not([hidden])');
-      sec.hidden = !any;
-    });
+    // A header shows only in the aisle view, and only when its aisle still has
+    // something visible under it.
+    for (var h = 0; h < heads.length; h++) {
+      if (headsSuppressed) { heads[h].hidden = true; continue; }
+      var cat = heads[h].dataset.catHead;
+      var any = false;
+      for (var j = 0; j < meta.length; j++) {
+        if (meta[j].el.dataset.cat === cat && !meta[j].el.hidden) { any = true; break; }
+      }
+      heads[h].hidden = !any;
+    }
 
     empty.hidden = shown !== 0;
     clear.hidden = q === '';
 
-    if (!q && activeCat === 'all') {
-      count.textContent = TOTAL + ' items';
-    } else {
-      count.textContent = shown + ' of ' + TOTAL;
-    }
+    var filtered = q || activeCat !== 'all' || wantSale || wantNew;
+    count.textContent = filtered ? (shown + ' of ' + TOTAL) : (TOTAL + ' items');
   }
 
-  // Debounce so long lists stay smooth while typing.
+  function refresh() { applySort(); apply(); }
+
   var timer;
   search.addEventListener('input', function () {
     clearTimeout(timer);
@@ -218,13 +397,25 @@ tickerItems:
     search.focus();
   });
 
+  sortSel.addEventListener('change', refresh);
+
+  function bindToggle(btn) {
+    btn.addEventListener('click', function () {
+      var on = btn.getAttribute('aria-pressed') === 'true';
+      btn.setAttribute('aria-pressed', on ? 'false' : 'true');
+      btn.classList.toggle('is-on', !on);
+      apply();
+    });
+  }
+  bindToggle(saleOnly);
+  bindToggle(newOnly);
+
   chips.forEach(function (chip) {
     chip.addEventListener('click', function () {
       chips.forEach(function (c) { c.classList.remove('is-active'); });
       chip.classList.add('is-active');
       activeCat = chip.dataset.cat;
       apply();
-      // Jump back up so the filtered result starts in view.
       var controls = document.getElementById('grocControls');
       if (controls && controls.getBoundingClientRect().top < 0) {
         controls.scrollIntoView({ block: 'start' });
@@ -232,7 +423,92 @@ tickerItems:
     });
   });
 
-  apply();
+  // "See all deals" flips to the sale-only view sorted by savings.
+  var jump = document.querySelector('[data-jump-sale]');
+  if (jump) {
+    jump.addEventListener('click', function () {
+      if (saleOnly.getAttribute('aria-pressed') !== 'true') saleOnly.click();
+      sortSel.value = 'savings';
+      refresh();
+      document.getElementById('grocControls').scrollIntoView({ block: 'start' });
+    });
+  }
+
+  /* ── Item detail ── */
+  var modal    = document.getElementById('grocModal');
+  var mFlags   = document.getElementById('grocModalFlags');
+  var mName    = document.getElementById('grocModalName');
+  var mBrand   = document.getElementById('grocModalBrand');
+  var mPricing = document.getElementById('grocModalPricing');
+  var mSpec    = document.getElementById('grocModalSpec');
+  var lastFocus = null;
+
+  function row(dt, dd) {
+    return dd ? '<dt>' + dt + '</dt><dd>' + dd + '</dd>' : '';
+  }
+
+  function openModal(el) {
+    var d = el.dataset;
+    var onSale = d.sale === '1';
+
+    var flags = '';
+    if (onSale)                  flags += '<span class="groc-tag groc-tag--sale">Sale</span>';
+    if (d.new === '1')           flags += '<span class="groc-tag groc-tag--new">New</span>';
+    if (d.dAvail === 'seasonal') flags += '<span class="groc-tag groc-tag--seasonal">Seasonal</span>';
+    if (d.dAvail === 'ask')      flags += '<span class="groc-tag groc-tag--ask">Call first</span>';
+    mFlags.innerHTML = flags;
+
+    mName.textContent = d.dName;
+    mBrand.textContent = d.dBrand + ' · ' + d.dSize;
+
+    var per = d.dWeight === '1' ? '<em>/' + d.dSize + '</em>' : '';
+    if (onSale) {
+      mPricing.innerHTML =
+        '<span class="groc-modal-now">$' + d.dPrice + per + '</span>' +
+        '<s class="groc-modal-was">$' + d.dList + '</s>' +
+        '<span class="groc-modal-save">Save $' + d.dSaved + ' (' + d.dPct + '%)</span>';
+    } else {
+      mPricing.innerHTML = '<span class="groc-modal-now">$' + d.dPrice + per + '</span>';
+    }
+
+    mSpec.innerHTML =
+      row('Size', d.dSize) +
+      row('Unit price', d.dUnit) +
+      row('Aisle', d.dAisle) +
+      row('Category', d.dCat) +
+      row('Origin', d.dOrigin) +
+      row('Limit', d.dLimit) +
+      row('SKU', d.dSku);
+
+    lastFocus = el;
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    modal.querySelector('.groc-modal-x').focus();
+  }
+
+  function closeModal() {
+    modal.hidden = true;
+    document.body.style.overflow = '';
+    if (lastFocus) lastFocus.focus();
+  }
+
+  grid.addEventListener('click', function (e) {
+    var el = e.target.closest('.groc-item');
+    if (el) openModal(el);
+  });
+  grid.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var el = e.target.closest('.groc-item');
+    if (el) { e.preventDefault(); openModal(el); }
+  });
+  modal.addEventListener('click', function (e) {
+    if (e.target.hasAttribute('data-close')) closeModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !modal.hidden) closeModal();
+  });
+
+  refresh();
 })();
 </script>
 {% endblock %}
