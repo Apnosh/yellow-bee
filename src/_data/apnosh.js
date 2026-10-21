@@ -14,7 +14,8 @@
  *      with fresh data within ~30 seconds.
  *
  * Env vars (set in Vercel project settings):
- *   APNOSH_SLUG     -- this restaurant's slug on the portal (required)
+ *   APNOSH_SLUG     -- this restaurant's slug on the portal (required). It also turns on the
+ *                      Apnosh tag on every page and sends the forms to the portal inbox
  *   APNOSH_API_KEY  -- only required if the portal has a key configured
  *
  * Failure mode:
@@ -45,10 +46,14 @@ const EMPTY = {
   meta: { siteType: 'unknown', generatedAt: null, error: null },
 }
 
+// The slug and portal address go to every template, even when the fetch fails, so the tag and the
+// forms (base.njk, assets/js/forms.js) keep working while the portal's data is unavailable.
+const WIRING = { slug: SLUG || null, portalBase: PORTAL_BASE }
+
 module.exports = async function () {
   if (!SLUG) {
     console.warn('[apnosh] APNOSH_SLUG not set, skipping data fetch')
-    return { ...EMPTY, meta: { ...EMPTY.meta, error: 'APNOSH_SLUG env var not set' } }
+    return { ...EMPTY, ...WIRING, meta: { ...EMPTY.meta, error: 'APNOSH_SLUG env var not set' } }
   }
 
   const url = `${PORTAL_BASE}/api/public/sites/${SLUG}`
@@ -59,7 +64,7 @@ module.exports = async function () {
     if (!res.ok) {
       const body = await res.text().catch(() => '')
       console.warn(`[apnosh] ${res.status} ${res.statusText}: ${body.slice(0, 200)}`)
-      return { ...EMPTY, meta: { ...EMPTY.meta, error: `${res.status}: ${body.slice(0, 100)}` } }
+      return { ...EMPTY, ...WIRING, meta: { ...EMPTY.meta, error: `${res.status}: ${body.slice(0, 100)}` } }
     }
     const data = await res.json()
     // Ensure content is always an object so templates can use the `or` fallback safely
@@ -67,9 +72,9 @@ module.exports = async function () {
     data.specials = data.specials || []
     const contentCount = Object.keys(data.content).length
     console.log(`[apnosh] fetched ok -- siteType=${data.meta?.siteType}, promo=${!!data.activePromo}, events=${data.upcomingEvents?.length ?? 0}, contentOverrides=${contentCount}`)
-    return data
+    return { ...data, ...WIRING }
   } catch (e) {
     console.warn('[apnosh] fetch failed:', e.message)
-    return { ...EMPTY, meta: { ...EMPTY.meta, error: e.message } }
+    return { ...EMPTY, ...WIRING, meta: { ...EMPTY.meta, error: e.message } }
   }
 }

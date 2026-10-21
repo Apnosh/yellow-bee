@@ -51,7 +51,7 @@ tickerItems:
       </div>
 
       <div class="inquiry-form reveal-right">
-        <form id="franchiseForm" onsubmit="handleFranchiseSubmit(event)">
+        <form id="franchiseForm" data-yb-form onsubmit="handleFranchiseSubmit(event)">
           <div class="form-row">
             <div class="form-group">
               <label for="fname">First Name *</label>
@@ -120,6 +120,7 @@ tickerItems:
             <label for="consent">I agree to be contacted by Yellow Bee regarding this franchise inquiry. I understand this is not a commitment or offer to purchase a franchise. View our <a href="/contact/">privacy policy</a>.</label>
           </div>
           <button type="submit" class="form-submit-btn">Submit Franchise Inquiry &rarr;</button>
+          <p class="form-error" role="alert" hidden></p>
           <p class="form-note">We review every inquiry personally and respond within 3&ndash;5 business days. Your information is never shared with third parties.</p>
         </form>
       </div>
@@ -132,8 +133,8 @@ tickerItems:
 
 {% block scripts %}
 <script>
-// Build a mailto: that opens the user's email client pre-filled with their
-// inquiry, addressed to {{ site.email }}. No backend service required.
+// Send the inquiry to Yellow Bee's inbox in the Apnosh portal (assets/js/forms.js). On a build
+// without APNOSH_SLUG, open the user's email client pre-filled to {{ site.email }} instead.
 function handleFranchiseSubmit(e) {
   e.preventDefault();
   const f = e.target;
@@ -148,6 +149,44 @@ function handleFranchiseSubmit(e) {
     under150: 'Under $150K', '150-250': '$150K – $250K',
     '250-350': '$250K – $350K', over350: '$350K+', unsure: 'Not sure yet',
   };
+  const btn = f.querySelector('.form-submit-btn');
+  const err = f.querySelector('.form-error');
+  const done = (text, color) => {
+    btn.textContent = text;
+    btn.style.background = color;
+    setTimeout(() => {
+      btn.textContent = 'Submit Franchise Inquiry →';
+      btn.style.background = '';
+    }, 6000);
+  };
+
+  if (window.YBForms && YBForms.ready) {
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    err.hidden = true;
+    YBForms.send(f, 'franchise', {
+      name: (v('fname') + ' ' + v('lname')).trim(),
+      email: v('email'),
+      phone: v('phone'),
+      city: v('city'),
+      timeline: labelMap[v('timeline')] || v('timeline'),
+      background: labelMap[v('background')] || v('background'),
+      investment: labelMap[v('investment')] || v('investment'),
+      message: v('message'),
+    }).then(r => {
+      btn.disabled = false;
+      if (!r.ok) {
+        btn.textContent = 'Submit Franchise Inquiry →';
+        err.textContent = r.error;
+        err.hidden = false;
+        return;
+      }
+      f.reset();
+      done('✓ Sent. We’ll be in touch within 3–5 business days', '#4AA84A');
+    });
+    return;
+  }
+
   const fields = [
     ['Name', v('fname') + ' ' + v('lname')],
     ['Email', v('email')],
@@ -166,13 +205,7 @@ function handleFranchiseSubmit(e) {
     + '&body=' + encodeURIComponent(body);
   window.location.href = url;
 
-  const btn = f.querySelector('.form-submit-btn');
-  btn.textContent = '✓ Email opened — send to complete';
-  btn.style.background = '#4AA84A';
-  setTimeout(() => {
-    btn.textContent = 'Submit Franchise Inquiry →';
-    btn.style.background = '';
-  }, 6000);
+  done('✓ Email opened — send to complete', '#4AA84A');
 }
 </script>
 {% endblock %}

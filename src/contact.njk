@@ -78,7 +78,7 @@ tickerItems:
 
       </aside>
 
-      <form class="ct-form reveal-right" onsubmit="handleContactSubmit(event)">
+      <form class="ct-form reveal-right" data-yb-form onsubmit="handleContactSubmit(event)">
         <div class="ct-row">
           <div class="ct-group">
             <label for="fname">First Name <span aria-hidden="true">*</span></label>
@@ -117,6 +117,7 @@ tickerItems:
         </div>
 
         <button type="submit" class="btn btn-yellow ct-submit">Send Message &rarr;</button>
+        <p class="ct-error" role="alert" hidden></p>
 
         <p class="ct-footnote">Your info stays with our team.</p>
       </form>
@@ -129,8 +130,8 @@ tickerItems:
 
 {% block scripts %}
 <script>
-// Open the user's email client pre-filled with their inquiry, addressed to
-// {{ site.email }}. No backend service required.
+// Send the message to Yellow Bee's inbox in the Apnosh portal (assets/js/forms.js). On a build
+// without APNOSH_SLUG, open the user's email client pre-filled to {{ site.email }} instead.
 function handleContactSubmit(e) {
   e.preventDefault();
   const f = e.target;
@@ -142,6 +143,34 @@ function handleContactSubmit(e) {
   };
   const subjectLabel = subjectMap[v('subject')] || v('subject') || 'General';
   const fullName = (v('fname') + ' ' + v('lname')).trim();
+  const btn = f.querySelector('.ct-submit');
+  const original = btn.innerHTML;
+  const err = f.querySelector('.ct-error');
+
+  if (window.YBForms && YBForms.ready) {
+    const kind = { catering: 'catering', feedback: 'feedback' }[v('subject')] || 'contact';
+    btn.disabled = true;
+    btn.innerHTML = 'Sending…';
+    err.hidden = true;
+    YBForms.send(f, kind, { name: fullName, email: v('email'), phone: v('phone'), topic: subjectLabel, message: v('message') }).then(r => {
+      btn.disabled = false;
+      if (!r.ok) {
+        btn.innerHTML = original;
+        err.textContent = r.error;
+        err.hidden = false;
+        return;
+      }
+      f.reset();
+      btn.innerHTML = '✓ Sent. We’ll get back to you soon';
+      btn.classList.add('is-submitted');
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.classList.remove('is-submitted');
+      }, 6000);
+    });
+    return;
+  }
+
   const fields = [
     ['Name', fullName],
     ['Email', v('email')],
@@ -157,8 +186,6 @@ function handleContactSubmit(e) {
     + '&body=' + encodeURIComponent(body);
   window.location.href = url;
 
-  const btn = f.querySelector('.ct-submit');
-  const original = btn.innerHTML;
   btn.innerHTML = '✓ Email opened — send to complete';
   btn.classList.add('is-submitted');
   setTimeout(() => {

@@ -24,6 +24,12 @@
     })(window, document, "clarity", "script", "wrrbml65fn");
   </script>
 
+  {% if apnosh.slug %}
+  <!-- Apnosh tag: counts calls, directions and order taps for the Apnosh portal -->
+  <script async src="{{ apnosh.portalBase }}/t/{{ apnosh.slug }}.js"></script>
+  <script>window.YB_FORMS_ENDPOINT = {{ (apnosh.portalBase + '/api/forms/submit/' + apnosh.slug) | dump | safe }};</script>
+  {% endif %}
+
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="/assets/icons/icon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
@@ -104,6 +110,7 @@
 })();
 </script>
 
+<script src="/assets/js/forms.js?v={{ buildHash }}"></script>
 {% block scripts %}{% endblock %}
 
 </body>
