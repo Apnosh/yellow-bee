@@ -16,6 +16,10 @@ tickerItems:
 {% endblock %}
 
 {% block content %}
+{# what the owner sets in Apnosh's Your restaurant, else this site's own words (src/_data/apnosh.js owner) #}
+{% set addr = apnosh.owner.address or site.address %}
+{% set phone = apnosh.owner.phone or site.phone %}
+{% set handle = apnosh.owner.handle or site.handle %}
 
 <section class="ct-section ct-section--first" id="message">
   <div class="ct-mega" aria-hidden="true">Contact</div>
@@ -37,13 +41,12 @@ tickerItems:
         <div class="ct-aside-block">
           <div class="ct-aside-label">Flagship</div>
           <p class="ct-aside-text">
-            {{ site.address.street }}<br>
-            {{ site.address.city }}, {{ site.address.state }} {{ site.address.zip }}
+            {{ addr.street }}<br>
+            {{ addr.city }}, {{ addr.state }} {{ addr.zip }}
           </p>
         </div>
 
-        {% set phone = apnosh.client.phone or site.phone %}
-        <div class="ct-aside-block">
+                <div class="ct-aside-block">
           <div class="ct-aside-label">Phone</div>
           <a class="ct-aside-link ct-aside-link--sm" href="tel:{{ phone | replace('(','') | replace(')','') | replace(' ','') | replace('-','') }}">{{ phone }}</a>
         </div>
@@ -71,9 +74,21 @@ tickerItems:
         </div>
         {% endif %}
 
+        {# holiday and one-off hours set in Apnosh, for the next 90 days #}
+        {% if apnosh.owner.dates and apnosh.owner.dates.length %}
+        <div class="ct-aside-block">
+          <div class="ct-aside-label">Holiday hours</div>
+          <ul class="ct-hours">
+            {% for d in apnosh.owner.dates %}
+            <li class="ct-hours-row"><span class="ct-hours-day">{{ d.date }}</span><span class="ct-hours-time">{% if d.closed %}Closed{% else %}{{ d.open | time12 }} – {{ d.close | time12 }}{% endif %}</span></li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
         <div class="ct-aside-block">
           <div class="ct-aside-label">Social</div>
-          <a class="ct-aside-link ct-aside-link--sm" href="{{ site.socials.instagram }}" target="_blank" rel="noopener">{{ site.handle }}</a>
+          <a class="ct-aside-link ct-aside-link--sm" href="{{ apnosh.owner.social.instagram or site.socials.instagram }}" target="_blank" rel="noopener">{{ handle }}</a>
         </div>
 
       </aside>

@@ -19,6 +19,12 @@ tickerItems:
 
 <!-- OPEN LOCATIONS -->
 {% for loc in locations.open %}
+{# the flagship is the listing the owner edits in Apnosh's Your restaurant: its address, phone, hours and holiday
+   hours come from there (src/_data/apnosh.js owner), else from locations.json #}
+{% set own = apnosh.owner if loop.first else {} %}
+{% set la = own.address or loc.address %}
+{% set lp = own.phone or loc.phone %}
+{% set lh = own.week or loc.hours %}
 <section class="loc-section loc-section--open{% if loop.first %} loc-section--first{% endif %}" id="{{ loc.slug }}">
   <div class="loc-mega" aria-hidden="true">{{ loc.name }}</div>
   <div class="sec-container">
@@ -41,19 +47,27 @@ tickerItems:
         <dl class="loc-spec">
           <dt>Address</dt>
           <dd>
-            {{ loc.address.street }}<br>
-            {{ loc.address.city }}, {{ loc.address.state }} {{ loc.address.zip }}
+            {{ la.street }}<br>
+            {{ la.city }}, {{ la.state }} {{ la.zip }}
           </dd>
 
           <dt>Phone</dt>
-          <dd><a href="tel:{{ loc.phone | replace('(','') | replace(')','') | replace(' ','') | replace('-','') }}">{{ loc.phone }}</a></dd>
+          <dd><a href="tel:{{ lp | replace('(','') | replace(')','') | replace(' ','') | replace('-','') }}">{{ lp }}</a></dd>
 
           <dt>Hours</dt>
           <dd>
-            {% for h in loc.hours %}
+            {% for h in lh %}
             <div class="loc-hours-row"><span>{{ h.days }}</span><span>{{ h.time }}</span></div>
             {% endfor %}
           </dd>
+          {% if own.dates and own.dates.length %}
+          <dt>Holiday hours</dt>
+          <dd>
+            {% for d in own.dates %}
+            <div class="loc-hours-row"><span>{{ d.date }}</span><span>{{ d.time }}</span></div>
+            {% endfor %}
+          </dd>
+          {% endif %}
         </dl>
 
         <ul class="loc-features">
@@ -63,7 +77,7 @@ tickerItems:
         </ul>
 
         <div class="loc-ctas">
-          <a href="https://maps.google.com/?q={{ loc.mapQuery }}" class="btn btn-yellow" target="_blank" rel="noopener">Get Directions</a>
+          <a href="https://maps.google.com/?q={{ (la.street + ', ' + la.city + ', ' + la.state + ' ' + la.zip) | urlencode }}" class="btn btn-yellow" target="_blank" rel="noopener">Get Directions</a>
           <a href="/menu/" class="btn btn-outline">View Menu</a>
         </div>
       </div>

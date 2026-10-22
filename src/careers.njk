@@ -16,6 +16,10 @@ tickerItems:
 {% endblock %}
 
 {% block content %}
+{# what the owner sets in Apnosh's Your restaurant, else this site's own words (src/_data/apnosh.js owner) #}
+{% set addr = apnosh.owner.address or site.address %}
+{% set phone = apnosh.owner.phone or site.phone %}
+{% set handle = apnosh.owner.handle or site.handle %}
 
 <!-- CHAPTER 01 — OPEN ROLES -->
 <section class="careers-section careers-section--paper careers-section--first" id="roles">
@@ -128,7 +132,7 @@ tickerItems:
         <div class="apply-cta-label">Send it to</div>
         <a class="apply-email" href="mailto:{{ site.email }}?subject={{ careers.apply.emailSubject | urlencode }}&body={{ careers.apply.emailBody | urlencode }}">{{ site.email }}</a>
         <a href="mailto:{{ site.email }}?subject={{ careers.apply.emailSubject | urlencode }}&body={{ careers.apply.emailBody | urlencode }}" class="btn btn-yellow apply-btn">Email Your Application</a>
-        <p class="apply-footnote">Prefer to drop by? Come see us at {{ site.address.street }}, {{ site.address.city }}.</p>
+        <p class="apply-footnote">Prefer to drop by? Come see us at {{ addr.street }}, {{ addr.city }}.</p>
       </div>
     </div>
   </div>
