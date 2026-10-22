@@ -23,6 +23,12 @@ module.exports = function (eleventyConfig) {
     return m === "00" ? `${h} ${period}` : `${h}:${m} ${period}`;
   });
 
+  // Fixed 2-decimal money so catalog prices never render as "$1.0/lb".
+  eleventyConfig.addFilter("money", function (n) {
+    const v = Number(n);
+    return Number.isFinite(v) ? v.toFixed(2) : n;
+  });
+
   // Full day name from a short key ("mon" -> "Monday").
   eleventyConfig.addFilter("dayLabel", function (key) {
     const map = { mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday", sat: "Saturday", sun: "Sunday" };
