@@ -1,4 +1,13 @@
 {% import "socials-svg.njk" as icons %}
+{# what the owner sets in Apnosh's Your restaurant, else this site's own words (src/_data/apnosh.js owner) #}
+{% set addr = apnosh.owner.address or site.address %}
+{% set phone = apnosh.owner.phone or site.phone %}
+{% set soc = {
+  instagram: apnosh.owner.social.instagram or site.socials.instagram,
+  facebook: apnosh.owner.social.facebook or site.socials.facebook,
+  tiktok: apnosh.owner.social.tiktok or site.socials.tiktok,
+  x: apnosh.owner.social.x or site.socials.x
+} %}
 <footer class="footer">
   <div class="footer-topline" aria-hidden="true"></div>
   <div class="footer-grid">
@@ -6,17 +15,17 @@
       <img src="{{ apnosh.content['header.logo'] or '/photos/horizontallogo.png' }}" alt="{{ site.name }}" loading="lazy" decoding="async">
       <p>{{ apnosh.content['footer.tagline'] or "Fresh food. Fast service. No compromise. Your neighborhood market in the heart of Seattle." }}</p>
       <div class="footer-social">
-        {% if site.socials.instagram and site.socials.instagram != '#' %}
-        <a href="{{ site.socials.instagram }}" target="_blank" rel="noopener" aria-label="Instagram">{{ icons.instagram() }}</a>
+        {% if soc.instagram and soc.instagram != '#' %}
+        <a href="{{ soc.instagram }}" target="_blank" rel="noopener" aria-label="Instagram">{{ icons.instagram() }}</a>
         {% endif %}
-        {% if site.socials.facebook and site.socials.facebook != '#' %}
-        <a href="{{ site.socials.facebook }}" target="_blank" rel="noopener" aria-label="Facebook">{{ icons.facebook() }}</a>
+        {% if soc.facebook and soc.facebook != '#' %}
+        <a href="{{ soc.facebook }}" target="_blank" rel="noopener" aria-label="Facebook">{{ icons.facebook() }}</a>
         {% endif %}
-        {% if site.socials.tiktok and site.socials.tiktok != '#' %}
-        <a href="{{ site.socials.tiktok }}" target="_blank" rel="noopener" aria-label="TikTok">{{ icons.tiktok() }}</a>
+        {% if soc.tiktok and soc.tiktok != '#' %}
+        <a href="{{ soc.tiktok }}" target="_blank" rel="noopener" aria-label="TikTok">{{ icons.tiktok() }}</a>
         {% endif %}
-        {% if site.socials.x and site.socials.x != '#' %}
-        <a href="{{ site.socials.x }}" target="_blank" rel="noopener" aria-label="X">{{ icons.x() }}</a>
+        {% if soc.x and soc.x != '#' %}
+        <a href="{{ soc.x }}" target="_blank" rel="noopener" aria-label="X">{{ icons.x() }}</a>
         {% endif %}
       </div>
     </div>
@@ -34,11 +43,11 @@
       <h4>Contact</h4>
       <div class="info-line">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        {{ site.address.street }}<br>{{ site.address.city }}, {{ site.address.state }} {{ site.address.zip }}
+        {{ addr.street }}<br>{{ addr.city }}, {{ addr.state }} {{ addr.zip }}
       </div>
       <div class="info-line">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-        {{ site.phone }}
+        {{ phone }}
       </div>
       <div class="info-line">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
